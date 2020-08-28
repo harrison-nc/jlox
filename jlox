@@ -1,0 +1,2 @@
+# Compile and run the program
+mvn package && java -jar target/jlox-1.0-SNAPSHOT.jar "$@"
