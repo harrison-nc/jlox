@@ -48,6 +48,10 @@ public class Scanner {
             case '+' -> addToken(PLUS);
             case ';' -> addToken(SEMICOLON);
             case '*' -> addToken(STAR);
+            case '!' -> addToken(match('=') ? BANG_EQUAL : BANG);
+            case '=' -> addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+            case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
+            case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
             default -> LoxError.error(line, "Unexpected character: " + c);
         }
     }
@@ -55,6 +59,17 @@ public class Scanner {
     private char advance() {
         current++;
         return source.charAt(current - 1);
+    }
+
+    private boolean match(char expected) {
+        if (isAtEnd()) {
+            return false;
+        } else if (source.charAt(current) != expected) {
+            return false;
+        } else {
+            current++;
+            return true;
+        }
     }
 
     private boolean isAtEnd() {
