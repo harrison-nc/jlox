@@ -79,11 +79,18 @@ public class Scanner {
     }
 
     private void identifier() {
-        while(isAlphaNumeric(peek())) {
+        while (isAlphaNumeric(peek())) {
             advance();
         }
 
-        addToken(IDENTIFIER);
+        var text = source.substring(start, current);
+        var tokenType = TokenType.get(text);
+
+        if (tokenType == null) {
+            tokenType = IDENTIFIER;
+        }
+
+        addToken(tokenType);
     }
 
     private void number() {
