@@ -1,5 +1,7 @@
 package com.example.lox.jlox;
 
+import java.util.List;
+
 public class Scanner {
     private final String source;
 
@@ -10,4 +12,8 @@ public class Scanner {
     private Scanner(String source) {
         this.source = source;
     }
+
+	public List<Token> scanTokens() {
+		return null;
+	}
 }
