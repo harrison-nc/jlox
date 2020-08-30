@@ -33,6 +33,7 @@ public class Lox {
         run(new String(bytes, Charset.defaultCharset()));
 
         if (LoxError.hadError()) {
+            LoxError.report();
             System.exit(EX_DATAERR.code());
         }
     }
@@ -50,7 +51,6 @@ public class Lox {
             }
 
             run(line);
-            LoxError.hadError(false);
         }
     }
 

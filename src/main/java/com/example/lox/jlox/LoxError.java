@@ -1,24 +1,42 @@
 package com.example.lox.jlox;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoxError {
-    private static final AtomicBoolean hadError = new AtomicBoolean(false);
+    private static final List<Error> errors = new ArrayList<>();
 
     static boolean hadError() {
-        return hadError.get();
-    }
-
-    static void hadError(boolean value) {
-        hadError.set(value);
+        return !errors.isEmpty();
     }
 
     static void error(int line, String message) {
-        report(line, "", message);
+        errors.add(Error.of(line, message));
     }
 
-    private static void report(int line, String where, String message) {
-        System.err.println("[line " + line + "] Error " + where + ": " + message);
-        hadError.set(true);
+    static void report() {
+        for (Error error : errors) {
+            System.out.println(error);
+        }
+        errors.clear();
+    }
+}
+
+class Error {
+    private final int line;
+    private final String message;
+
+    private Error(int line, String message) {
+        this.line = line;
+        this.message = message;
+    }
+
+    static Error of(int line, String message) {
+        return new Error(line, message);
+    }
+
+    @Override
+    public String toString() {
+        return "[line " + line + "] Error : " + message;
     }
 }
