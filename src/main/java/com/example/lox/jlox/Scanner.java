@@ -64,9 +64,32 @@ public class Scanner {
             case ' ', '\r', '\t' -> {
                 // Ignore whitespace.
             }
+            case '"' -> string();
             case '\n' -> line++;
             default -> LoxError.error(line, "Unexpected character: " + c);
         }
+    }
+
+    private void string() {
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') {
+                line++;
+            }
+            advance();
+        }
+
+        // Unterminated string.
+        if (isAtEnd()) {
+            LoxError.error(line, "Unterminated string.");
+            return;
+        }
+
+        // The closing "
+        advance();
+
+        // Trim the surrounding quotes.
+        String value = source.substring(start + 1, current - 1);
+        addToken(STRING, value);
     }
 
     private char peek() {
