@@ -52,7 +52,24 @@ public class Scanner {
             case '=' -> addToken(match('=') ? EQUAL_EQUAL : EQUAL);
             case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
             case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
+            case '/' -> {
+                if (match('/')) {
+                    while (peek() != '\n' && !isAtEnd()) {
+                        advance();
+                    }
+                } else {
+                    addToken(SLASH);
+                }
+            }
             default -> LoxError.error(line, "Unexpected character: " + c);
+        }
+    }
+
+    private char peek() {
+        if (isAtEnd()) {
+            return '\0';
+        } else {
+            return source.charAt(current);
         }
     }
 
