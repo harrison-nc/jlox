@@ -1,9 +1,11 @@
-package com.example.lox.jlox;
+package com.example.lox.jlox.scanner;
+
+import com.example.lox.jlox.intern.LoxError;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.lox.jlox.TokenType.*;
+import static com.example.lox.jlox.scanner.TokenType.*;
 
 public class Scanner {
     private final String source;

@@ -1,4 +1,4 @@
-package com.example.lox.jlox;
+package com.example.lox.jlox.intern;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.List;
 public class LoxError {
     private static final List<Error> errors = new ArrayList<>();
 
-    static boolean hadError() {
+    public static boolean hadError() {
         return !errors.isEmpty();
     }
 
-    static void error(int line, String message) {
+    public static void error(int line, String message) {
         errors.add(Error.of(line, message));
     }
 
-    static void report() {
+    public static void report() {
         for (Error error : errors) {
             System.out.println(error);
         }

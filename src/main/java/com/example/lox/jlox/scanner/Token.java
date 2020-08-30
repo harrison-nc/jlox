@@ -1,4 +1,4 @@
-package com.example.lox.jlox;
+package com.example.lox.jlox.scanner;
 
 public class Token {
     private final TokenType type;

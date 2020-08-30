@@ -1,5 +1,9 @@
 package com.example.lox.jlox;
 
+import com.example.lox.jlox.intern.LoxError;
+import com.example.lox.jlox.scanner.Scanner;
+import com.example.lox.jlox.scanner.Token;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,8 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.example.lox.jlox.ExitCode.EX_DATAERR;
-import static com.example.lox.jlox.ExitCode.EX_USAGE;
+import static com.example.lox.jlox.intern.ExitCode.EX_DATAERR;
+import static com.example.lox.jlox.intern.ExitCode.EX_USAGE;
 
 /**
  * Lox Interpreter
@@ -27,8 +31,6 @@ public class Lox {
     }
 
     private static void runFile(String pathString) throws IOException {
-        // Todo: Could have used Files.readAllLines(..)
-        // Todo: Could have used Files.lines() and then use the stream api
         byte[] bytes = Files.readAllBytes(Path.of(pathString));
         run(new String(bytes, Charset.defaultCharset()));
 
