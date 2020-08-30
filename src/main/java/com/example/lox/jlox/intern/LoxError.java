@@ -20,6 +20,9 @@ public class LoxError {
         }
         errors.clear();
     }
+
+    private LoxError() {
+    }
 }
 
 class Error {
