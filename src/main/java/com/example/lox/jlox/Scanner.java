@@ -1,9 +1,16 @@
 package com.example.lox.jlox;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.lox.jlox.TokenType.*;
 
 public class Scanner {
     private final String source;
+    private final List<Token> tokens;
+    private int start;
+    private int current;
+    private int line;
 
     public static Scanner apply(String source) {
         return new Scanner(source);
@@ -11,9 +18,55 @@ public class Scanner {
 
     private Scanner(String source) {
         this.source = source;
+        this.tokens = new ArrayList<>();
+        this.start = 0;
+        this.current = 0;
+        this.line = 1;
     }
 
-	public List<Token> scanTokens() {
-		return null;
-	}
+    public List<Token> scanTokens() {
+        while (!isAtEnd()) {
+            // We are at the beginning of the next lexeme.
+            start = current;
+            scanToken();
+        }
+
+        tokens.add(Token.of(EOF, "", null, line));
+        return tokens;
+    }
+
+    private void scanToken() {
+        char c = advance();
+        switch (c) {
+            case '(' -> addToken(LEFT_PAREN);
+            case ')' -> addToken(RIGHT_PAREN);
+            case '{' -> addToken(LEFT_BRACE);
+            case '}' -> addToken(RIGHT_BRACE);
+            case ',' -> addToken(COMMA);
+            case '.' -> addToken(DOT);
+            case '-' -> addToken(MINUS);
+            case '+' -> addToken(PLUS);
+            case ';' -> addToken(SEMICOLON);
+            case '*' -> addToken(STAR);
+            default -> LoxError.error(line, "Unexpected character: " + c);
+        }
+    }
+
+    private char advance() {
+        current++;
+        return source.charAt(current - 1);
+    }
+
+    private boolean isAtEnd() {
+        return current >= source.length();
+    }
+
+    private void addToken(TokenType tokenType) { // Could return a token
+        addToken(tokenType, null);
+    }
+
+    private void addToken(TokenType tokenType, Object literal) { // Could return a token
+        String text = source.substring(start, current);
+        tokens.add(Token.of(tokenType, text, literal, line));
+    }
 }
