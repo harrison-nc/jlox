@@ -61,6 +61,10 @@ public class Scanner {
                     addToken(SLASH);
                 }
             }
+            case ' ', '\r', '\t' -> {
+                // Ignore whitespace.
+            }
+            case '\n' -> line++;
             default -> LoxError.error(line, "Unexpected character: " + c);
         }
     }
