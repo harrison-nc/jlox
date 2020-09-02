@@ -1,6 +1,7 @@
 package com.example.lox.jlox;
 
 import com.example.lox.jlox.intern.LoxError;
+import com.example.lox.jlox.parser.Parser;
 import com.example.lox.jlox.scanner.Scanner;
 import com.example.lox.jlox.scanner.Token;
 
@@ -10,8 +11,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.lox.jlox.AstPrinter.printExpr;
 import static com.example.lox.jlox.intern.ExitCode.EX_DATAERR;
 import static com.example.lox.jlox.intern.ExitCode.EX_USAGE;
 
@@ -53,6 +56,7 @@ public class Lox {
             }
 
             run(line);
+            System.out.println();
         }
     }
 
@@ -60,9 +64,20 @@ public class Lox {
         Scanner scanner = Scanner.apply(source);
         List<Token> tokens = scanner.scanTokens();
 
-        for (var token : tokens) {
-            System.out.println(token);
+        if(LoxError.hadError()) {
+            LoxError.report();
+            return;
         }
+
+        Parser parser = Parser.parseTokens(tokens);
+        List<Expr> exprList = parser.parseAll();
+
+        if(LoxError.hadError()) {
+            LoxError.report();
+            return;
+        }
+
+        exprList.forEach(e -> System.out.println(printExpr(e)));
     }
 
     private Lox() {
