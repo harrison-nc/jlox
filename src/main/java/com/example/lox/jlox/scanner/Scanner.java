@@ -7,7 +7,7 @@ import java.util.List;
 
 import static com.example.lox.jlox.scanner.TokenType.*;
 
-public class Scanner {
+public final class Scanner {
     private final String source;
     private final List<Token> tokens;
     private int start;
