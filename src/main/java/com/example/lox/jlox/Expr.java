@@ -2,9 +2,9 @@ package com.example.lox.jlox;
 
 import com.example.lox.jlox.scanner.Token;
 
-import java.util.List;
-
 public abstract class Expr {
+
+    abstract <R> R accept(Visitor<R> visitor);
 
     public interface Visitor<R> {
 
@@ -17,11 +17,11 @@ public abstract class Expr {
         R visitUnaryExpr(Unary expr);
     }
 
-    public static Binary binaryExpr(Expr left, Token operator, Expr right) {
-        return new Binary(left, operator, right);
-    }
-
     public static class Binary extends Expr {
+
+        private final Expr left;
+        private final Token operator;
+        private final Expr right;
 
         private Binary(Expr left, Token operator, Expr right) {
             this.left = left;
@@ -29,38 +29,38 @@ public abstract class Expr {
             this.right = right;
         }
 
+        public static Binary of(Expr left, Token operator, Expr right) {
+            return new Binary(left, operator, right);
+        }
+
         @Override
         public <R> R accept(Visitor<R> visitor) {
             return visitor.visitBinaryExpr(this);
         }
 
-        private final Expr left;
-
         public Expr left() {
             return left;
         }
 
-        private final Token operator;
-
         public Token operator() {
             return operator;
         }
-
-        private final Expr right;
 
         public Expr right() {
             return right;
         }
     }
 
-    public static Grouping groupingExpr(Expr expression) {
-        return new Grouping(expression);
-    }
-
     public static class Grouping extends Expr {
+
+        private final Expr expression;
 
         private Grouping(Expr expression) {
             this.expression = expression;
+        }
+
+        public static Grouping of(Expr expression) {
+            return new Grouping(expression);
         }
 
         @Override
@@ -68,21 +68,21 @@ public abstract class Expr {
             return visitor.visitGroupingExpr(this);
         }
 
-        private final Expr expression;
-
         public Expr expression() {
             return expression;
         }
     }
 
-    public static Literal literalExpr(Object value) {
-        return new Literal(value);
-    }
-
     public static class Literal extends Expr {
+
+        private final Object value;
 
         private Literal(Object value) {
             this.value = value;
+        }
+
+        public static Literal of(Object value) {
+            return new Literal(value);
         }
 
         @Override
@@ -90,22 +90,23 @@ public abstract class Expr {
             return visitor.visitLiteralExpr(this);
         }
 
-        private final Object value;
-
         public Object value() {
             return value;
         }
     }
 
-    public static Unary unaryExpr(Token operator, Expr right) {
-        return new Unary(operator, right);
-    }
-
     public static class Unary extends Expr {
+
+        private final Token operator;
+        private final Expr right;
 
         private Unary(Token operator, Expr right) {
             this.operator = operator;
             this.right = right;
+        }
+
+        public static Unary of(Token operator, Expr right) {
+            return new Unary(operator, right);
         }
 
         @Override
@@ -113,18 +114,12 @@ public abstract class Expr {
             return visitor.visitUnaryExpr(this);
         }
 
-        private final Token operator;
-
         public Token operator() {
             return operator;
         }
-
-        private final Expr right;
 
         public Expr right() {
             return right;
         }
     }
-
-    abstract <R> R accept(Visitor<R> visitor);
 }

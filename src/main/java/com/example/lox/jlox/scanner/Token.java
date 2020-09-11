@@ -6,15 +6,15 @@ public class Token {
     private final Object literal;
     private final int line;
 
-    public static Token of(TokenType type, String lexeme, Object literal, int line) {
-        return new Token(type, lexeme, literal, line);
-    }
-
     private Token(TokenType type, String lexeme, Object literal, int line) {
         this.type = type;
         this.lexeme = lexeme;
         this.literal = literal;
         this.line = line;
+    }
+
+    public static Token of(TokenType type, String lexeme, Object literal, int line) {
+        return new Token(type, lexeme, literal, line);
     }
 
     public TokenType type() {

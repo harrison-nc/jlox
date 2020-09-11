@@ -3,11 +3,11 @@ package com.example.lox.jlox;
 class AstPrinter
         implements Expr.Visitor<String> {
 
-    public static String printExpr(Expr expr) {
-        return new AstPrinter().print(expr);
+    private AstPrinter() {
     }
 
-    private AstPrinter() {
+    public static String printExpr(Expr expr) {
+        return new AstPrinter().print(expr);
     }
 
     private String print(Expr expr) {

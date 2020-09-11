@@ -5,16 +5,19 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.example.lox.jlox.intern.ExitCode.EX_USAGE;
+import static com.example.lox.jlox.Ex.EX_USAGE;
 
 public class GenerateAst {
+    private GenerateAst() {
+    }
+
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
-            System.out.println("Usage: generate_ast <output directory>");
+            Util.println("Usage: generate_ast <output directory>");
             System.exit(EX_USAGE.code());
         } else {
             String outputDir = args[0];
-            defineAst(outputDir, "Expr", List.of(
+            defineAst(outputDir, List.of(
                     "Binary : Expr left, Token operator, Expr right",
                     "Grouping : Expr expression",
                     "Literal : Object value",
@@ -23,8 +26,9 @@ public class GenerateAst {
         }
     }
 
-    private static void defineAst(String outputDir, String baseName, List<String> types)
+    private static void defineAst(String outputDir, List<String> types)
             throws IOException {
+        String baseName = "Expr";
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
@@ -39,7 +43,6 @@ public class GenerateAst {
         for (String type : types) {
             String className = type.split(":")[0].trim();
             String fieldList = type.split(":")[1].trim();
-            defineFactory(writer, baseName, className, fieldList);
             defineType(writer, baseName, className, fieldList);
         }
 
@@ -64,11 +67,9 @@ public class GenerateAst {
         writer.println("    }");
     }
 
-    private static void defineFactory(PrintWriter writer, String baseName, String className, String fieldList) {
-        // Factory method.
+    private static void defineFactory(PrintWriter writer, String className, String fieldList) {
         writer.println();
-        writer.println("    public static " + className + " " + className.toLowerCase()
-                + baseName + "(" + fieldList + ") {");
+        writer.println("        public static " + className + " of (" + fieldList + ") {");
 
         StringBuilder args = new StringBuilder();
         String[] fields = fieldList.split(", ");
@@ -81,8 +82,8 @@ public class GenerateAst {
             }
         }
 
-        writer.println("        return new " + className + "(" + args.toString() + ");");
-        writer.println("    }");
+        writer.println("            return new " + className + "(" + args.toString() + ");");
+        writer.println("        }");
     }
 
     private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
@@ -103,6 +104,9 @@ public class GenerateAst {
         }
 
         writer.println("        }");
+
+        // Factory method.
+        defineFactory(writer, className, fieldList);
 
         // Visitor pattern.
         writer.println();
@@ -127,8 +131,5 @@ public class GenerateAst {
         }
 
         writer.println("    }");
-    }
-
-    private GenerateAst() {
     }
 }

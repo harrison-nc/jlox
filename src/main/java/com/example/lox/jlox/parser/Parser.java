@@ -1,46 +1,59 @@
 package com.example.lox.jlox.parser;
 
 import com.example.lox.jlox.Expr;
-import com.example.lox.jlox.intern.LoxError;
+import com.example.lox.jlox.Expr.Binary;
+import com.example.lox.jlox.Expr.Grouping;
+import com.example.lox.jlox.Expr.Literal;
+import com.example.lox.jlox.Expr.Unary;
+import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-import static com.example.lox.jlox.Expr.*;
 import static com.example.lox.jlox.scanner.TokenType.*;
 
 public final class Parser {
     private final List<Token> tokens;
     private int current;
 
-    public static Parser parseTokens(List<Token> tokens) {
-        return new Parser(tokens);
-    }
-
     private Parser(List<Token> tokens) {
         this.tokens = tokens;
         current = 0;
+    }
+
+    public static Parser of(List<Token> tokens) {
+        return new Parser(tokens);
     }
 
     public Expr parse() {
         try {
             return expression();
         } catch (ParserError e) {
-            return literalExpr(EOF);
+            return Literal.of(EOF);
         }
     }
 
     public List<Expr> parseAll() {
-        List<Expr> exprList = new ArrayList<>();
+        List<Expr> exprs = new ArrayList<>();
 
         while (!isAtEnd()) {
             Expr expr = parse();
-            exprList.add(expr);
+
+            if (expr instanceof Literal) {
+                var literal = (Literal) expr;
+                if (literal.value() == EOF) {
+                    advance();
+                    continue;
+                }
+            }
+
+            exprs.add(expr);
         }
 
-        return exprList;
+        return exprs;
     }
 
     private Expr expression() {
@@ -48,48 +61,28 @@ public final class Parser {
     }
 
     private Expr equality() {
-        Expr expr = comparison();
-
-        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
-            Token operator = previous();
-            Expr right = comparison();
-            expr = binaryExpr(expr, operator, right);
-        }
-
-        return expr;
+        return leftAssocBinaryExpr(this::comparison, BANG_EQUAL, EQUAL_EQUAL);
     }
 
     private Expr comparison() {
-        Expr expr = addition();
-
-        while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
-            Token operator = previous();
-            Expr right = addition();
-            expr = binaryExpr(expr, operator, right);
-        }
-
-        return expr;
+        return leftAssocBinaryExpr(this::addition, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL);
     }
 
     private Expr addition() {
-        Expr expr = multiplication();
-
-        while (match(MINUS, PLUS)) {
-            Token operator = previous();
-            Expr right = multiplication();
-            expr = binaryExpr(expr, operator, right);
-        }
-
-        return expr;
+        return leftAssocBinaryExpr(this::multiplication, MINUS, PLUS);
     }
 
     private Expr multiplication() {
-        Expr expr = unary();
+        return leftAssocBinaryExpr(this::unary, SLASH, STAR);
+    }
 
-        while (match(SLASH, STAR)) {
+    private Expr leftAssocBinaryExpr(Supplier<Expr> func, TokenType... types) {
+        Expr expr = func.get();
+
+        while (match(types)) {
             Token operator = previous();
-            Expr right = unary();
-            expr = binaryExpr(expr, operator, right);
+            Expr right = func.get();
+            expr = Binary.of(expr, operator, right);
         }
 
         return expr;
@@ -99,28 +92,26 @@ public final class Parser {
         if (match(BANG, MINUS)) {
             Token operator = previous();
             Expr right = primary();
-            return unaryExpr(operator, right);
+            return Unary.of(operator, right);
         }
         return primary();
     }
 
     private Expr primary() {
         if (match(FALSE)) {
-            return literalExpr(false);
+            return Literal.of(false);
         } else if (match(TRUE)) {
-            return literalExpr(true);
+            return Literal.of(true);
         } else if (match(NIL)) {
-            return literalExpr(null);
+            return Literal.of(null);
         } else if (match(NUMBER, STRING)) {
-            return literalExpr(previous().literal());
+            return Literal.of(previous().literal());
         } else if (match(LEFT_PAREN)) {
             Expr expr = expression();
-            consume(RIGHT_PAREN, "Expect ')' after expression.");
-            return groupingExpr(expr);
+            consume();
+            return Grouping.of(expr);
         } else {
-            throw ParserError.of(
-                    "Expect an expression but found: "
-                            + previous() + " at " + previous().line());
+            throw error(peek(), "Expect an expression");
         }
     }
 
@@ -135,11 +126,11 @@ public final class Parser {
         return false;
     }
 
-    private Token consume(TokenType type, String message) {
-        if (check(type)) {
+    private Token consume() {
+        if (check(TokenType.RIGHT_PAREN)) {
             return advance();
         } else {
-            throw error(peek(), message);
+            throw error(peek(), "Expect ')' after expression.");
         }
     }
 
@@ -172,8 +163,8 @@ public final class Parser {
     }
 
     private ParserError error(Token token, String message) {
-        LoxError.error(token, message);
-        return ParserError.of(token + " : " + message);
+        Lox.error(token, message);
+        return new ParserError();
     }
 
     private void synchronize() {
@@ -185,30 +176,21 @@ public final class Parser {
             }
 
             switch (peek().type()) {
-                case CLASS,
-                        FUN,
-                        VAR,
-                        FOR,
-                        IF,
-                        WHILE,
-                        PRINT,
-                        RETURN -> {
+                case CLASS:
+                case FUN:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
                     return;
-                }
             }
-
-            advance();
         }
+
+        advance();
     }
 
     public static class ParserError extends RuntimeException {
-
-        public static ParserError of(String message) {
-            return new ParserError(message);
-        }
-
-        private ParserError(String message) {
-            super(message);
-        }
     }
 }

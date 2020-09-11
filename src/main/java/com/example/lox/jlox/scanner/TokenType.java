@@ -45,6 +45,7 @@ public enum TokenType {
     /**
      * Returns the keyword that matches the specified name,
      * otherwise returns null
+     *
      * @param name token name
      * @return a token type or null
      */

@@ -1,6 +1,6 @@
 package com.example.lox.jlox.scanner;
 
-import com.example.lox.jlox.intern.LoxError;
+import com.example.lox.jlox.Lox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,6 @@ public final class Scanner {
     private int current;
     private int line;
 
-    public static Scanner apply(String source) {
-        return new Scanner(source);
-    }
-
     private Scanner(String source) {
         this.source = source;
         this.tokens = new ArrayList<>();
@@ -26,7 +22,11 @@ public final class Scanner {
         this.line = 1;
     }
 
-    public List<Token> scanTokens() {
+    public static Scanner of(String source) {
+        return new Scanner(source);
+    }
+
+    public List<Token> scan() {
         while (!isAtEnd()) {
             // We are at the beginning of the next lexeme.
             start = current;
@@ -54,17 +54,8 @@ public final class Scanner {
             case '=' -> addToken(match('=') ? EQUAL_EQUAL : EQUAL);
             case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
             case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
-            case '/' -> {
-                if (match('/')) {
-                    while (peek() != '\n' && !isAtEnd()) {
-                        advance();
-                    }
-                } else {
-                    addToken(SLASH);
-                }
-            }
+            case '/' -> slashOrComment();
             case ' ', '\r', '\t' -> {
-                // Ignore whitespace.
             }
             case '"' -> string();
             case '\n' -> line++;
@@ -74,7 +65,7 @@ public final class Scanner {
                 } else if (isAlpha(c)) {
                     identifier();
                 } else {
-                    LoxError.error(line, "Unexpected character: " + c);
+                    Lox.error(line, "Unexpected character: " + c);
                 }
             }
         }
@@ -123,7 +114,7 @@ public final class Scanner {
 
         // Unterminated string.
         if (isAtEnd()) {
-            LoxError.error(line, "Unterminated string.");
+            Lox.error(line, "Unterminated string.");
             return;
         }
 
@@ -133,6 +124,16 @@ public final class Scanner {
         // Trim the surrounding quotes.
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
+    }
+
+    private void slashOrComment() {
+        if (match('/')) {
+            while (peek() != '\n' && !isAtEnd()) {
+                advance();
+            }
+        } else {
+            addToken(SLASH);
+        }
     }
 
     private boolean isDigit(char c) {
@@ -185,11 +186,11 @@ public final class Scanner {
         return current >= source.length();
     }
 
-    private void addToken(TokenType tokenType) { // Could return a token
+    private void addToken(TokenType tokenType) {
         addToken(tokenType, null);
     }
 
-    private void addToken(TokenType tokenType, Object literal) { // Could return a token
+    private void addToken(TokenType tokenType, Object literal) {
         String text = source.substring(start, current);
         tokens.add(Token.of(tokenType, text, literal, line));
     }
