@@ -1,5 +1,7 @@
 package com.example.lox.jlox;
 
+import com.example.lox.jlox.interpreter.Interpreter;
+import com.example.lox.jlox.interpreter.RuntimeError;
 import com.example.lox.jlox.parser.Parser;
 import com.example.lox.jlox.scanner.Scanner;
 import com.example.lox.jlox.scanner.Token;
@@ -15,14 +17,15 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static com.example.lox.jlox.Ex.EX_DATAERR;
-import static com.example.lox.jlox.Ex.EX_USAGE;
-import static com.example.lox.jlox.tool.Util.printf;
+import static com.example.lox.jlox.Ex.EX_SOFTWARE;
 import static com.example.lox.jlox.tool.Util.println;
 
 /**
  * Lox Interpreter.
  */
 public class Lox {
+    private static final Interpreter interpreter = new Interpreter();
+    private static boolean hadRuntimeError = false;
     private static boolean hadError = false;
 
     private Lox() {
@@ -31,7 +34,7 @@ public class Lox {
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
             println("Usage: jlox [script]");
-            System.exit(EX_USAGE.code());
+            System.exit(Ex.EX_USAGE.code());
         } else if (args.length == 1) {
             runFile(args[0]);
         } else {
@@ -43,11 +46,27 @@ public class Lox {
         byte[] bytes = Files.readAllBytes(Path.of(pathString));
         var tokenList = scan(new String(bytes, Charset.defaultCharset()));
 
-        if (Lox.hadError) {
+        if (!hadError) {
+            var exprList = parse(tokenList);
+            if (!hadError) {
+                exprList.forEach(Lox::interpret);
+            }
+        }
+
+        checkForError();
+        // Exit normally if there were no errors.
+    }
+
+    private static void checkForError() {
+        // Exit if there were errors while scanning or parsing.
+        if (hadError) {
             System.exit(EX_DATAERR.code());
         }
 
-        parse(tokenList);
+        // Exit if there was any error while interpreting an expression.
+        if (hadRuntimeError) {
+            System.exit(EX_SOFTWARE.code());
+        }
     }
 
     private static void runPrompt() throws IOException {
@@ -64,8 +83,16 @@ public class Lox {
 
             var tokenList = scan(line);
 
+            // If there was not error while scanning then parse the tokens.
             if (!hadError) {
-                parse(tokenList);
+                // Parses only one expression at a time so there is only one item in the list.
+                var exprList = parse(tokenList);
+                var expr = exprList.get(0);
+
+                // Run interpreter if there was no error while parsing the source code.
+                if (expr != null) {
+                    interpret(expr);
+                }
             }
 
             hadError = false;
@@ -74,32 +101,17 @@ public class Lox {
 
     private static List<Token> scan(String source) {
         Scanner scanner = Scanner.of(source);
-        List<Token> tokens = scanner.scan();
-
-        tokens.forEach(Lox::printToken);
-        println("Token #" + tokens.size());
-
-        return tokens;
+        return scanner.scan();
     }
 
     private static List<Expr> parse(List<Token> tokens) {
         Parser parser = Parser.of(tokens);
-
-        // Expr expr = parser.parse();
-        // printExpr(expr);
-        // return List.of(expr);
-
-        List<Expr> exprs = parser.parseAll();
-        exprs.forEach(Lox::printExpr);
-        return exprs;
+        return parser.parseAll();
     }
 
-    static void printExpr(Expr e) {
-        println(AstPrinter.printExpr(e));
-    }
-
-    static void printToken(Token t) {
-        printf("%3d: %-13s %s%n", t.line(), t.type(), t.literal());
+    private static void interpret(Expr expr) {
+        Util.print(expr, " => ");
+        interpreter.interpret(expr);
     }
 
     public static void error(int line, String message) {
@@ -116,6 +128,11 @@ public class Lox {
 
     public static void error(int line, String where, String message) {
         report(line, where, message);
+    }
+
+    public static void runtimeError(RuntimeError error) {
+        Util.err(error.getMessage() + "\n[line " + error.token().line() + "]");
+        hadRuntimeError = true;
     }
 
     private static void report(int line, String where, String message) {

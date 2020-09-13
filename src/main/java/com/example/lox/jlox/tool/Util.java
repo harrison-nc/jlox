@@ -1,11 +1,26 @@
 package com.example.lox.jlox.tool;
 
+import com.example.lox.jlox.Expr;
+import com.example.lox.jlox.scanner.Token;
+
 public final class Util {
     private Util() {
     }
 
     public static void print(Object message) {
         System.out.print(message);
+    }
+
+    public static void print(Expr expr) {
+        print(expr, "");
+    }
+
+    public static void print(Expr expr, String args) {
+        print(AstPrinter.printExpr(expr) + args);
+    }
+
+    public static void print(Token token) {
+        printf("%3d: %-15s %s", token.line(), token.type(), token.literal());
     }
 
     public static void println(Object message) {

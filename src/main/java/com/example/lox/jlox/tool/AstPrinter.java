@@ -1,7 +1,8 @@
-package com.example.lox.jlox;
+package com.example.lox.jlox.tool;
 
-class AstPrinter
-        implements Expr.Visitor<String> {
+import com.example.lox.jlox.Expr;
+
+public class AstPrinter implements Expr.Visitor<String> {
 
     private AstPrinter() {
     }

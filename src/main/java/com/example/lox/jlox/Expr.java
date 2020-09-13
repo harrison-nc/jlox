@@ -4,7 +4,7 @@ import com.example.lox.jlox.scanner.Token;
 
 public abstract class Expr {
 
-    abstract <R> R accept(Visitor<R> visitor);
+    public abstract <R> R accept(Visitor<R> visitor);
 
     public interface Visitor<R> {
 
