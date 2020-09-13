@@ -3,6 +3,8 @@ package com.example.lox.jlox;
 import com.example.lox.jlox.scanner.Token;
 
 public abstract class Expr {
+    private Expr() {
+    }
 
     public abstract <R> R accept(Visitor<R> visitor);
 

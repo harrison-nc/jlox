@@ -17,18 +17,20 @@ public class GenerateAst {
             System.exit(EX_USAGE.code());
         } else {
             String outputDir = args[0];
-            defineAst(outputDir, List.of(
+            defineAst(outputDir, "Expr", List.of(
                     "Binary : Expr left, Token operator, Expr right",
                     "Grouping : Expr expression",
                     "Literal : Object value",
                     "Unary : Token operator, Expr right"
             ));
+            defineAst(outputDir, "Stmt", List.of(
+                    "Expression: Expr expression",
+                    "Print     : Expr expression"
+            ));
         }
     }
 
-    private static void defineAst(String outputDir, List<String> types)
-            throws IOException {
-        String baseName = "Expr";
+    private static void defineAst(String outputDir, String baseName, List<String> types) throws IOException {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
@@ -37,6 +39,10 @@ public class GenerateAst {
         writer.println("import java.util.List;");
         writer.println();
         writer.println("public abstract class " + baseName + " {");
+
+        // Constructor.
+        writer.println("    private " + baseName + " () {");
+        writer.println("    }");
 
         defineVisitor(writer, baseName, types);
 
@@ -48,7 +54,7 @@ public class GenerateAst {
 
         // The base accept() method.
         writer.println();
-        writer.println("    abstract <R> R accept(Visitor<R> visitor);");
+        writer.println("    public abstract <R> R accept(Visitor<R> visitor);");
         writer.println("}");
         writer.close();
     }

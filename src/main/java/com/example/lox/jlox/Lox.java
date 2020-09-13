@@ -19,7 +19,6 @@ import java.util.List;
 
 import static com.example.lox.jlox.Ex.EX_DATAERR;
 import static com.example.lox.jlox.Ex.EX_SOFTWARE;
-import static com.example.lox.jlox.tool.Util.print;
 import static com.example.lox.jlox.tool.Util.println;
 
 /**
@@ -48,8 +47,8 @@ public class Lox {
         byte[] bytes = Files.readAllBytes(Path.of(pathString));
 
         var tokenList = scan(new String(bytes, Charset.defaultCharset()));
-        var exprList = parse(tokenList);
-        exprList.forEach(Lox::interpret);
+        var stmtList = parse(tokenList);
+        interpret(stmtList);
 
         checkForError();
         // Exit normally if there were no errors.
@@ -80,9 +79,8 @@ public class Lox {
             }
 
             var tokenList = scan(line);
-            var exprList = parse(tokenList);
-            var expr = exprList.get(0);
-            interpret(expr);
+            var  stmtList = parse(tokenList);
+            interpret(stmtList);
 
             hadError = false;
         }
@@ -93,21 +91,21 @@ public class Lox {
         return scanner.scan();
     }
 
-    private static List<Expr> parse(List<Token> tokens) {
+    private static List<Stmt> parse(List<Token> tokens) {
         if (hadError || null == tokens) {
             return new ArrayList<>(1);
         }
 
         Parser parser = Parser.of(tokens);
-        return parser.parseAll();
+        return parser.parse();
     }
 
-    private static void interpret(Expr expr) {
-        if (hadError || null == expr) {
+    private static void interpret(List<Stmt> statements) {
+        if (hadError || null == statements) {
             return;
         }
 
-        interpreter.interpret(expr);
+        interpreter.interpret(statements);
     }
 
     public static void error(int line, String message) {

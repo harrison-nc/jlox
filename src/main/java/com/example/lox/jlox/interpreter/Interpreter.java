@@ -2,17 +2,21 @@ package com.example.lox.jlox.interpreter;
 
 import com.example.lox.jlox.Expr;
 import com.example.lox.jlox.Lox;
+import com.example.lox.jlox.Stmt;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
+
+import java.util.List;
 
 import static com.example.lox.jlox.tool.Util.println;
 import static com.example.lox.jlox.tool.Util.stringify;
 
-public final class Interpreter implements Expr.Visitor<Object> {
-    public void interpret(Expr expr) {
-        try {
-            Object value = evaluate(expr);
-            println(stringify(value));
+public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    public void interpret(List<Stmt> statements) {
+        try{
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
@@ -116,5 +120,22 @@ public final class Interpreter implements Expr.Visitor<Object> {
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression());
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression());
+        println(stringify(value));
+        return null;
     }
 }

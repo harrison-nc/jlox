@@ -6,6 +6,7 @@ import com.example.lox.jlox.Expr.Grouping;
 import com.example.lox.jlox.Expr.Literal;
 import com.example.lox.jlox.Expr.Unary;
 import com.example.lox.jlox.Lox;
+import com.example.lox.jlox.Stmt;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
 
@@ -28,32 +29,34 @@ public final class Parser {
         return new Parser(tokens);
     }
 
-    public Expr parse() {
-        try {
-            return expression();
-        } catch (ParserError e) {
-            return Literal.of(EOF);
-        }
-    }
-
-    public List<Expr> parseAll() {
-        List<Expr> exprs = new ArrayList<>();
+    public List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
 
         while (!isAtEnd()) {
-            Expr expr = parse();
-
-            if (expr instanceof Literal) {
-                var literal = (Literal) expr;
-                if (literal.value() == EOF) {
-                    advance();
-                    continue;
-                }
-            }
-
-            exprs.add(expr);
+            statements.add(statement());
         }
 
-        return exprs;
+        return statements;
+    }
+
+    private Stmt statement() {
+        if (match(PRINT)) {
+            return printStatement();
+        }
+
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return Stmt.Print.of(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return Stmt.Expression.of(expr);
     }
 
     private Expr expression() {
@@ -108,7 +111,7 @@ public final class Parser {
             return Literal.of(previous().literal());
         } else if (match(LEFT_PAREN)) {
             Expr expr = expression();
-            consume();
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
             return Grouping.of(expr);
         } else {
             throw error(peek(), "Expect an expression");
@@ -126,11 +129,11 @@ public final class Parser {
         return false;
     }
 
-    private Token consume() {
-        if (check(TokenType.RIGHT_PAREN)) {
+    private Token consume(TokenType type, String message) {
+        if (check(type)) {
             return advance();
         } else {
-            throw error(peek(), "Expect ')' after expression.");
+            throw error(peek(), message);
         }
     }
 
