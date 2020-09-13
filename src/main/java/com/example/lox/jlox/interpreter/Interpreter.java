@@ -4,29 +4,17 @@ import com.example.lox.jlox.Expr;
 import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
-import com.example.lox.jlox.tool.Util;
+
+import static com.example.lox.jlox.tool.Util.println;
+import static com.example.lox.jlox.tool.Util.stringify;
 
 public final class Interpreter implements Expr.Visitor<Object> {
     public void interpret(Expr expr) {
         try {
             Object value = evaluate(expr);
-            Util.println(stringify(value));
+            println(stringify(value));
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
-        }
-    }
-
-    private String stringify(Object object) {
-        if (object == null) {
-            return "nil";
-        } else if (object instanceof Double) {
-            String text = object.toString();
-            if (text.endsWith(".0")) {
-                text = text.substring(0, text.length() - 2);
-            }
-            return text;
-        } else {
-            return object.toString();
         }
     }
 

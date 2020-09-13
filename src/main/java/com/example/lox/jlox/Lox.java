@@ -14,10 +14,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.lox.jlox.Ex.EX_DATAERR;
 import static com.example.lox.jlox.Ex.EX_SOFTWARE;
+import static com.example.lox.jlox.tool.Util.print;
 import static com.example.lox.jlox.tool.Util.println;
 
 /**
@@ -44,14 +46,10 @@ public class Lox {
 
     private static void runFile(String pathString) throws IOException {
         byte[] bytes = Files.readAllBytes(Path.of(pathString));
-        var tokenList = scan(new String(bytes, Charset.defaultCharset()));
 
-        if (!hadError) {
-            var exprList = parse(tokenList);
-            if (!hadError) {
-                exprList.forEach(Lox::interpret);
-            }
-        }
+        var tokenList = scan(new String(bytes, Charset.defaultCharset()));
+        var exprList = parse(tokenList);
+        exprList.forEach(Lox::interpret);
 
         checkForError();
         // Exit normally if there were no errors.
@@ -82,18 +80,9 @@ public class Lox {
             }
 
             var tokenList = scan(line);
-
-            // If there was not error while scanning then parse the tokens.
-            if (!hadError) {
-                // Parses only one expression at a time so there is only one item in the list.
-                var exprList = parse(tokenList);
-                var expr = exprList.get(0);
-
-                // Run interpreter if there was no error while parsing the source code.
-                if (expr != null) {
-                    interpret(expr);
-                }
-            }
+            var exprList = parse(tokenList);
+            var expr = exprList.get(0);
+            interpret(expr);
 
             hadError = false;
         }
@@ -105,12 +94,19 @@ public class Lox {
     }
 
     private static List<Expr> parse(List<Token> tokens) {
+        if (hadError || null == tokens) {
+            return new ArrayList<>(1);
+        }
+
         Parser parser = Parser.of(tokens);
         return parser.parseAll();
     }
 
     private static void interpret(Expr expr) {
-        Util.print(expr, " => ");
+        if (hadError || null == expr) {
+            return;
+        }
+
         interpreter.interpret(expr);
     }
 

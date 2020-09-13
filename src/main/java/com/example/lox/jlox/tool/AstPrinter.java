@@ -2,6 +2,8 @@ package com.example.lox.jlox.tool;
 
 import com.example.lox.jlox.Expr;
 
+import static com.example.lox.jlox.tool.Util.stringify;
+
 public class AstPrinter implements Expr.Visitor<String> {
 
     private AstPrinter() {
@@ -27,11 +29,7 @@ public class AstPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitLiteralExpr(Expr.Literal expr) {
-        if (expr.value() == null) {
-            return "nil";
-        } else {
-            return expr.value().toString();
-        }
+        return stringify(expr.value());
     }
 
     @Override

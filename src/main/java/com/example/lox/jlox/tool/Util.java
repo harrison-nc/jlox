@@ -34,4 +34,18 @@ public final class Util {
     public static void err(Object message) {
         System.err.println(message);
     }
+
+    public static String stringify(Object object) {
+        if (object == null) {
+            return "nil";
+        } else if (object instanceof Double) {
+            String text = object.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        } else {
+            return object.toString();
+        }
+    }
 }
