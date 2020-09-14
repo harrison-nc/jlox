@@ -79,7 +79,7 @@ public class Lox {
             }
 
             var tokenList = scan(line);
-            var  stmtList = parse(tokenList);
+            var stmtList = parse(tokenList);
             interpret(stmtList);
 
             hadError = false;

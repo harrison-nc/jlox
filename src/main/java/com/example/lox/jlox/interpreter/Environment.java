@@ -12,11 +12,24 @@ class Environment {
         values.put(name, value);
     }
 
-    Object get(Token name) {
-        if (values.containsKey(name.lexeme())) {
-            return values.get(name.lexeme());
+    void assign(Token name, Object value) {
+        String lexeme = name.lexeme();
+
+        if (values.containsKey(lexeme)) {
+            values.put(lexeme, value);
+            return;
         }
 
-        throw new RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
+        throw new RuntimeError(name, "Undefined variable '" + lexeme + "'.");
+    }
+
+    Object get(Token name) {
+        String lexeme = name.lexeme();
+
+        if (values.containsKey(lexeme)) {
+            return values.get(lexeme);
+        }
+
+        throw new RuntimeError(name, "Undefined variable '" + lexeme + "'.");
     }
 }

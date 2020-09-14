@@ -5,6 +5,7 @@ import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.Stmt;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
+import com.example.lox.jlox.tool.AstPrinter;
 
 import java.util.List;
 
@@ -99,6 +100,13 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
         return environment.get(expr.name());
     }
 
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        Object value = evaluate(expr.value());
+        environment.assign(expr.name(), value);
+        return value;
+    }
+
     private void checkNumberOperands(Token operator, Object left, Object right) {
         if (left instanceof Double && right instanceof Double) return;
         throw new RuntimeError(operator, "operands must be numbers.");
@@ -129,10 +137,6 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
         return expr.accept(this);
     }
 
-    private void execute(Stmt stmt) {
-        stmt.accept(this);
-    }
-
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression());
@@ -156,5 +160,10 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
 
         environment.define(stmt.name().lexeme(), value);
         return null;
+    }
+
+    private void execute(Stmt stmt) {
+        println(AstPrinter.printStmt(stmt));
+        stmt.accept(this);
     }
 }

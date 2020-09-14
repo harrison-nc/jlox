@@ -18,10 +18,11 @@ public class GenerateAst {
         } else {
             String outputDir = args[0];
             defineAst(outputDir, "Expr", List.of(
-                    "Binary : Expr left, Token operator, Expr right",
+                    "Assign   : Token name, Expr value",
+                    "Binary   : Expr left, Token operator, Expr right",
                     "Grouping : Expr expression",
-                    "Literal : Object value",
-                    "Unary : Token operator, Expr right",
+                    "Literal  : Object value",
+                    "Unary    : Token operator, Expr right",
                     "Variable : Token name"
             ));
             defineAst(outputDir, "Stmt", List.of(
@@ -39,6 +40,7 @@ public class GenerateAst {
         writer.println("package com.example.lox.jlox;");
         writer.println();
         writer.println("import java.util.List;");
+        writer.println("import com.example.lox.jlox.scanner.Token;");
         writer.println();
         writer.println("public abstract class " + baseName + " {");
 
