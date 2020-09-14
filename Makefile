@@ -6,6 +6,11 @@ run: $(target)
 $(target):
 	@make build
 
+ast: $(target)
+	@java --module-path target/classes \
+ 	-m com.example.lox.jlox/com.example.lox.jlox.tool.GenerateAst \
+ 	src/main/java/com/example/lox/jlox
+
 build: pom.xml
 	@mvn package
 
