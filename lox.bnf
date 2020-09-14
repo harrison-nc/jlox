@@ -1,8 +1,15 @@
-program        ::= statement* EOF ;
+program        ::= declaration* EOF ;
+
+declaration    ::= varDecl
+                   | statement ;
+
+varDecl        ::= "var" IDENDIFIER ( "=" expression )? ";" ;
+
 statement      ::= printStmt
                    | exprStmt ;
 printStmt      ::= "print" expression ";" ;
 exprStmt       ::= expression ";" ;
+
 expression     ::= equality ;
 equality       ::= comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     ::= addition ( ( ">" | ">=" | "<" | "<=" ) addition)* ;
@@ -11,4 +18,5 @@ multiplication ::= unary ( ( "/" | "*" ) unary )* ;
 unary          ::= ( "!" | "-" ) unary
                    | primary ;
 primary        ::= NUMBER | STRING | "false" | "true" | "nil"
-                   | "(" expression ")" ;
+                   | "(" expression ")"
+                   | IDENDIFIER ;

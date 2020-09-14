@@ -1,5 +1,7 @@
 package com.example.lox.jlox;
 
+import com.example.lox.jlox.scanner.Token;
+
 public abstract class Stmt {
     private Stmt() {
     }
@@ -11,6 +13,8 @@ public abstract class Stmt {
         R visitExpressionStmt(Expression stmt);
 
         R visitPrintStmt(Print stmt);
+
+        R visitVarStmt(Var stmt);
     }
 
     public static class Expression extends Stmt {
@@ -54,6 +58,34 @@ public abstract class Stmt {
 
         public Expr expression() {
             return expression;
+        }
+    }
+
+    public static class Var extends Stmt {
+
+        private final Token name;
+        private final Expr initializer;
+
+        private Var(Token name, Expr initializer) {
+            this.name = name;
+            this.initializer = initializer;
+        }
+
+        public static Var of(Token name, Expr initializer) {
+            return new Var(name, initializer);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitVarStmt(this);
+        }
+
+        public Token name() {
+            return name;
+        }
+
+        public Expr initializer() {
+            return initializer;
         }
     }
 }
