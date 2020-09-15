@@ -19,6 +19,7 @@ import java.util.List;
 
 import static com.example.lox.jlox.Ex.EX_DATAERR;
 import static com.example.lox.jlox.Ex.EX_SOFTWARE;
+import static com.example.lox.jlox.tool.Util.print;
 import static com.example.lox.jlox.tool.Util.println;
 
 /**
@@ -71,7 +72,7 @@ public class Lox {
         var reader = new BufferedReader(input);
 
         for (; ; ) {
-            System.out.print("> ");
+            print("> ");
             String line = reader.readLine();
 
             if (line == null) {

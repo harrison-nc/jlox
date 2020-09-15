@@ -5,7 +5,6 @@ import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.Stmt;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
-import com.example.lox.jlox.tool.AstPrinter;
 
 import java.util.List;
 
@@ -169,7 +168,6 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
     }
 
     private void execute(Stmt stmt) {
-        println(AstPrinter.printStmt(stmt));
         stmt.accept(this);
     }
 

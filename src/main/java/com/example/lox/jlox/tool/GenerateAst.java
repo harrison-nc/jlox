@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.example.lox.jlox.Ex.EX_USAGE;
+import static com.example.lox.jlox.tool.Util.println;
 
 public class GenerateAst {
     private GenerateAst() {
@@ -13,7 +14,7 @@ public class GenerateAst {
 
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
-            Util.println("Usage: generate_ast <output directory>");
+            println("Usage: generate_ast <output directory>");
             System.exit(EX_USAGE.code());
         } else {
             String outputDir = args[0];
