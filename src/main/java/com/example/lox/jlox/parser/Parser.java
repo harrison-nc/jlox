@@ -65,13 +65,29 @@ public final class Parser {
     }
 
     private Stmt statement() {
-        if (match(PRINT)) {
+        if (match(IF)) {
+            return ifStatement();
+        } else if (match(PRINT)) {
             return printStatement();
         } else if (match(LEFT_BRACE)) {
             return Stmt.Block.of(block());
         } else {
             return expressionStatement();
         }
+    }
+
+    private Stmt ifStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after if condition.");
+
+        Stmt thenBranch = statement();
+        Stmt elseBranch = null;
+        if (match(ELSE)) {
+            elseBranch = statement();
+        }
+
+        return Stmt.If.of(condition, thenBranch, elseBranch);
     }
 
     private List<Stmt> block() {

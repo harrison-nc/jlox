@@ -4,12 +4,14 @@ declaration    ::= varDecl
                    | statement ;
 
 varDecl        ::= "var" IDENDIFIER ( "=" expression )? ";" ;
-statement      ::= printStmt
-                   | exprStmt
+statement      ::= exprStmt
+                   | ifStmt
+                   | printStmt
                    | block ;
 
-printStmt      ::= "print" expression ";" ;
 exprStmt       ::= expression ";" ;
+ifStmt         ::= "if" "(" expression ")" statement ( "else" statement )? ;
+printStmt      ::= "print" expression ";" ;
 block          ::= "{" declaration* "}" ;
 
 expression     ::= assignment ;

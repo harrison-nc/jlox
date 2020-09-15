@@ -137,6 +137,16 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
     }
 
     @Override
+    public Void visitIfStmt(Stmt.If stmt) {
+        if (isTruthy(evaluate(stmt.condition()))) {
+            execute(stmt.thenBranch());
+        } else if (null != stmt.elseBranch()) {
+            execute(stmt.elseBranch());
+        }
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression());
         return null;
