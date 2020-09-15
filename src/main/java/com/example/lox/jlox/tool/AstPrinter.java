@@ -2,6 +2,7 @@ package com.example.lox.jlox.tool;
 
 import com.example.lox.jlox.Expr;
 
+import static com.example.lox.jlox.scanner.TokenType.OR;
 import static com.example.lox.jlox.tool.Util.stringify;
 
 public class AstPrinter implements Expr.Visitor<String> {
@@ -45,6 +46,14 @@ public class AstPrinter implements Expr.Visitor<String> {
     @Override
     public String visitAssignExpr(Expr.Assign expr) {
         return expr.name().lexeme() + " " + expr.value().accept(this);
+    }
+
+    @Override
+    public String visitLogicalExpr(Expr.Logical expr) {
+        if (expr.operator().type() == OR) {
+            return parenthesize("or", expr.left(), expr.right());
+        }
+        return parenthesize("and", expr.left(), expr.right());
     }
 
     private String parenthesize(String name, Expr... exprs) {

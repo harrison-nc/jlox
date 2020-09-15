@@ -1,10 +1,7 @@
 package com.example.lox.jlox.parser;
 
 import com.example.lox.jlox.Expr;
-import com.example.lox.jlox.Expr.Binary;
-import com.example.lox.jlox.Expr.Grouping;
-import com.example.lox.jlox.Expr.Literal;
-import com.example.lox.jlox.Expr.Unary;
+import com.example.lox.jlox.Expr.*;
 import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.Stmt;
 import com.example.lox.jlox.scanner.Token;
@@ -118,7 +115,7 @@ public final class Parser {
     }
 
     private Expr assignment() {
-        Expr expr = equality();
+        Expr expr = or();
 
         if (match(EQUAL)) {
             Token equals = previous();
@@ -130,6 +127,26 @@ public final class Parser {
             }
 
             error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
+    }
+
+    private Expr or() {
+        return logicalExpr(this::and, OR);
+    }
+
+    private Expr and() {
+        return logicalExpr(this::equality, AND);
+    }
+
+    private Expr logicalExpr(Supplier<Expr> func, TokenType... types) {
+        Expr expr = func.get();
+
+        while (match(types)) {
+            Token operator = previous();
+            Expr right = func.get();
+            expr = Logical.of(expr, operator, right);
         }
 
         return expr;

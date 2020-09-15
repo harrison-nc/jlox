@@ -18,6 +18,8 @@ public abstract class Expr {
 
         R visitLiteralExpr(Literal expr);
 
+        R visitLogicalExpr(Logical expr);
+
         R visitUnaryExpr(Unary expr);
 
         R visitVariableExpr(Variable expr);
@@ -126,6 +128,40 @@ public abstract class Expr {
 
         public Object value() {
             return value;
+        }
+    }
+
+    public static class Logical extends Expr {
+
+        private final Expr left;
+        private final Token operator;
+        private final Expr right;
+
+        private Logical(Expr left, Token operator, Expr right) {
+            this.left = left;
+            this.operator = operator;
+            this.right = right;
+        }
+
+        public static Logical of(Expr left, Token operator, Expr right) {
+            return new Logical(left, operator, right);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitLogicalExpr(this);
+        }
+
+        public Expr left() {
+            return left;
+        }
+
+        public Token operator() {
+            return operator;
+        }
+
+        public Expr right() {
+            return right;
         }
     }
 
