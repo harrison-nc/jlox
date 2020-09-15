@@ -13,7 +13,7 @@ import static com.example.lox.jlox.tool.Util.println;
 import static com.example.lox.jlox.tool.Util.stringify;
 
 public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private final Environment environment = new Environment();
+    private Environment environment = new Environment();
 
     public void interpret(List<Stmt> statements) {
         try {
@@ -162,8 +162,28 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
         return null;
     }
 
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements(), new Environment(environment));
+        return null;
+    }
+
     private void execute(Stmt stmt) {
         println(AstPrinter.printStmt(stmt));
         stmt.accept(this);
+    }
+
+    private void executeBlock(List<Stmt> statements, Environment environment) {
+        Environment previous = this.environment;
+
+        try {
+            this.environment = environment;
+
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
     }
 }

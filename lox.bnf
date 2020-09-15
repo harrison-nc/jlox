@@ -4,21 +4,25 @@ declaration    ::= varDecl
                    | statement ;
 
 varDecl        ::= "var" IDENDIFIER ( "=" expression )? ";" ;
-
 statement      ::= printStmt
-                   | exprStmt ;
+                   | exprStmt
+                   | block ;
+
 printStmt      ::= "print" expression ";" ;
 exprStmt       ::= expression ";" ;
+block          ::= "{" declaration* "}" ;
 
 expression     ::= assignment ;
 assignment     ::= IDENDIFIER "=" assignment
                    | equality ;
+
 equality       ::= comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     ::= addition ( ( ">" | ">=" | "<" | "<=" ) addition)* ;
 addition       ::= multiplication ( ( "-" | "+" ) multiplication )* ;
 multiplication ::= unary ( ( "/" | "*" ) unary )* ;
 unary          ::= ( "!" | "-" ) unary
                    | primary ;
+
 primary        ::= NUMBER | STRING | "false" | "true" | "nil"
                    | "(" expression ")"
                    | IDENDIFIER ;

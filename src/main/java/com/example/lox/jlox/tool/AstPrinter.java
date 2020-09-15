@@ -75,6 +75,19 @@ public class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return parenthesize("print", stmt.expression());
     }
 
+    @Override
+    public String visitBlockStmt(Stmt.Block stmt) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("(do");
+        for (Stmt s : stmt.statements()) {
+            builder.append("\n");
+            builder.append(s.accept(this));
+        }
+        builder.append(")");
+
+        return builder.toString();
+    }
+
     private String parenthesize(String name, Expr... exprs) {
         return parenthesize(name, " ", exprs);
     }

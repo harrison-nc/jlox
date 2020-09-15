@@ -2,6 +2,8 @@ package com.example.lox.jlox;
 
 import com.example.lox.jlox.scanner.Token;
 
+import java.util.List;
+
 public abstract class Stmt {
     private Stmt() {
     }
@@ -10,11 +12,35 @@ public abstract class Stmt {
 
     public interface Visitor<R> {
 
+        R visitBlockStmt(Block stmt);
+
         R visitExpressionStmt(Expression stmt);
 
         R visitPrintStmt(Print stmt);
 
         R visitVarStmt(Var stmt);
+    }
+
+    public static class Block extends Stmt {
+
+        private final List<Stmt> statements;
+
+        private Block(List<Stmt> statements) {
+            this.statements = statements;
+        }
+
+        public static Block of(List<Stmt> statements) {
+            return new Block(statements);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitBlockStmt(this);
+        }
+
+        public List<Stmt> statements() {
+            return statements;
+        }
     }
 
     public static class Expression extends Stmt {
