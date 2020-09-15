@@ -4,6 +4,7 @@ import com.example.lox.jlox.Expr;
 import com.example.lox.jlox.Expr.*;
 import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.Stmt;
+import com.example.lox.jlox.Stmt.*;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
 
@@ -58,21 +59,67 @@ public final class Parser {
         }
 
         consume(SEMICOLON, "Expect ';' after variable declaration.");
-        return Stmt.Var.of(name, initializer);
+        return Var.of(name, initializer);
     }
 
     private Stmt statement() {
         if (match(IF)) {
             return ifStatement();
+        } else if (match(FOR)) {
+            return forStatement();
         } else if (match(WHILE)) {
             return whileStatement();
         } else if (match(PRINT)) {
             return printStatement();
         } else if (match(LEFT_BRACE)) {
-            return Stmt.Block.of(block());
+            return Block.of(block());
         } else {
             return expressionStatement();
         }
+    }
+
+    private Stmt forStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'for'.");
+
+        Stmt initializer;
+        if (match(SEMICOLON)) {
+            initializer = null;
+        } else if (match(VAR)) {
+            initializer = varDeclaration();
+        } else {
+            initializer = expressionStatement();
+        }
+
+        Expr condition = null;
+        if (!check(SEMICOLON)) {
+            condition = expression();
+        }
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+
+        Expr increment = null;
+        if (!check(RIGHT_PAREN)) {
+            increment = expression();
+        }
+        consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+
+        Stmt body = statement();
+
+        if (increment != null) {
+            body = Block.of(List.of(
+                    body,
+                    Expression.of(increment)));
+        }
+
+        if (condition == null) {
+            condition = Expr.Literal.of(true);
+        }
+        body = While.of(condition, body);
+
+        if (initializer != null) {
+            body = Block.of(List.of(initializer, body));
+        }
+
+        return body;
     }
 
     private Stmt whileStatement() {
@@ -80,7 +127,7 @@ public final class Parser {
         Expr condition = expression();
         consume(RIGHT_PAREN, "Expect ')' after while condition.");
         Stmt body = statement();
-        return Stmt.While.of(condition, body);
+        return While.of(condition, body);
     }
 
     private Stmt ifStatement() {
@@ -94,7 +141,7 @@ public final class Parser {
             elseBranch = statement();
         }
 
-        return Stmt.If.of(condition, thenBranch, elseBranch);
+        return If.of(condition, thenBranch, elseBranch);
     }
 
     private List<Stmt> block() {
@@ -111,13 +158,13 @@ public final class Parser {
     private Stmt printStatement() {
         Expr value = expression();
         consume(SEMICOLON, "Expect ';' after value.");
-        return Stmt.Print.of(value);
+        return Print.of(value);
     }
 
     private Stmt expressionStatement() {
         Expr expr = expression();
         consume(SEMICOLON, "Expect ';' after expression.");
-        return Stmt.Expression.of(expr);
+        return Expression.of(expr);
     }
 
     private Expr expression() {
@@ -131,9 +178,9 @@ public final class Parser {
             Token equals = previous();
             Expr value = assignment();
 
-            if (expr instanceof Expr.Variable) {
-                Token name = ((Expr.Variable) expr).name();
-                return Expr.Assign.of(name, value);
+            if (expr instanceof Variable) {
+                Token name = ((Variable) expr).name();
+                return Assign.of(name, value);
             }
 
             error(equals, "Invalid assignment target.");
@@ -209,7 +256,7 @@ public final class Parser {
         } else if (match(NUMBER, STRING)) {
             return Literal.of(previous().literal());
         } else if (match(IDENTIFIER)) {
-            return Expr.Variable.of(previous());
+            return Variable.of(previous());
         } else if (match(LEFT_PAREN)) {
             Expr expr = expression();
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
