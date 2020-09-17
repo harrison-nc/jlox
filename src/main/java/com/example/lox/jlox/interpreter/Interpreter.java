@@ -10,8 +10,8 @@ import com.example.lox.jlox.scanner.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.lox.jlox.interpreter.NativeFn.print;
 import static com.example.lox.jlox.scanner.TokenType.OR;
-import static com.example.lox.jlox.tool.Util.println;
 import static com.example.lox.jlox.tool.Util.stringify;
 
 public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
@@ -37,6 +37,7 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
             }
         };
         globals.define("clock", clock);
+        globals.define("print", print);
     }
 
     public void interpret(List<Stmt> statements) {
@@ -91,25 +92,37 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
     @Override
     public Object visitCallExpr(Expr.Call expr) {
         Object callee = evaluate(expr.callee());
+        LoxCallable function = callable(expr, callee);
 
+        if (function.arity() == 0) {
+            return function.call(this, null);
+        } else {
+            List<Object> arguments = arguments(expr, function);
+            return function.call(this, arguments);
+        }
+    }
+
+    private List<Object> arguments(Expr.Call expr, LoxCallable function) {
         List<Object> arguments = new ArrayList<>();
+
         for (Expr argument : expr.arguments()) {
             arguments.add(evaluate(argument));
         }
-
-        if (!(callee instanceof LoxCallable)) {
-            throw new RuntimeError(expr.paren(), "Can only call functions and classes.");
-        }
-
-        LoxCallable function = (LoxCallable) callee;
 
         if (arguments.size() != function.arity()) {
             throw new RuntimeError(expr.paren(), "Expected %d arguments but got %d."
                     .formatted(function.arity(),
                             arguments.size()));
         }
+        return arguments;
+    }
 
-        return function.call(this, arguments);
+    private LoxCallable callable(Expr.Call expr, Object callee) {
+        if (!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(expr.paren(), "Can only call functions and classes.");
+        }
+
+        return (LoxCallable) callee;
     }
 
     @Override
@@ -228,13 +241,6 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
     public Void visitFunctionStmt(Stmt.Function stmt) {
         LoxFunction function = new LoxFunction(stmt, environment);
         environment.define(stmt.name().lexeme(), function);
-        return null;
-    }
-
-    @Override
-    public Void visitPrintStmt(Stmt.Print stmt) {
-        Object value = evaluate(stmt.expression());
-        println(stringify(value));
         return null;
     }
 

@@ -20,8 +20,6 @@ public abstract class Stmt {
 
         R visitIfStmt(If stmt);
 
-        R visitPrintStmt(Print stmt);
-
         R visitReturnStmt(Return stmt);
 
         R visitVarStmt(Var stmt);
@@ -138,28 +136,6 @@ public abstract class Stmt {
 
         public Stmt elseBranch() {
             return elseBranch;
-        }
-    }
-
-    public static class Print extends Stmt {
-
-        private final Expr expression;
-
-        private Print(Expr expression) {
-            this.expression = expression;
-        }
-
-        public static Print of(Expr expression) {
-            return new Print(expression);
-        }
-
-        @Override
-        public <R> R accept(Visitor<R> visitor) {
-            return visitor.visitPrintStmt(this);
-        }
-
-        public Expr expression() {
-            return expression;
         }
     }
 

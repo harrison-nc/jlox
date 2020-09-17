@@ -100,8 +100,6 @@ public final class Parser {
             return forStatement();
         } else if (match(WHILE)) {
             return whileStatement();
-        } else if (match(PRINT)) {
-            return printStatement();
         } else if (match(RETURN)) {
             return returnStatement();
         } else if (match(LEFT_BRACE)) {
@@ -186,12 +184,6 @@ public final class Parser {
 
         consume(RIGHT_BRACE, "Expect '}' after block.");
         return statements;
-    }
-
-    private Stmt printStatement() {
-        Expr value = expression();
-        consume(SEMICOLON, "Expect ';' after value.");
-        return Print.of(value);
     }
 
     private Stmt returnStatement() {
@@ -418,7 +410,6 @@ public final class Parser {
                 case FOR:
                 case IF:
                 case WHILE:
-                case PRINT:
                 case RETURN:
                     return;
             }

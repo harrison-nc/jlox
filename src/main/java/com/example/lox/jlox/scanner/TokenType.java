@@ -20,7 +20,7 @@ public enum TokenType {
 
     // Keywords.
     AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
-    PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+    RETURN, SUPER, THIS, TRUE, VAR, WHILE,
 
     EOF;
 
@@ -34,7 +34,6 @@ public enum TokenType {
             entry("if", IF),
             entry("nil", NIL),
             entry("or", OR),
-            entry("print", PRINT),
             entry("return", RETURN),
             entry("super", SUPER),
             entry("this", THIS),
