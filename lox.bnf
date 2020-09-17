@@ -1,8 +1,13 @@
 program        ::= declaration* EOF ;
 declaration    ::= varDecl
+                   | funDecl
                    | statement ;
 
 varDecl        ::= "var" IDENDIFIER ( "=" expression )? ";" ;
+funDecl        ::= "fun" function ;
+function       ::= IDENDIFIER "(" parameters? ")" block ;
+parameters     ::= IDENDIFIER ( "," IDENDIFIER )* ;
+
 statement      ::= exprStmt
                    | ifStmt
                    | forStmt

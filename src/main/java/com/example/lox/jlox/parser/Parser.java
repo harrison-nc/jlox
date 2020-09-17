@@ -41,6 +41,8 @@ public final class Parser {
         try {
             if (match(VAR)) {
                 return varDeclaration();
+            } else if (match(FUN)) {
+                return function();
             }
 
             return statement();
@@ -165,6 +167,26 @@ public final class Parser {
         Expr expr = expression();
         consume(SEMICOLON, "Expect ';' after expression.");
         return Expression.of(expr);
+    }
+
+    private Stmt function() {
+        Token name = consume(IDENTIFIER, "Expect function name.");
+        consume(LEFT_PAREN, "Expect '(' after %s name.");
+        List<Token> parameters = new ArrayList<>();
+        if (!check(RIGHT_PAREN)) {
+            do {
+                if (parameters.size() >= 255) {
+                    error(peek(), "Cannot have more than 255 parameters.");
+                }
+
+                parameters.add(consume(IDENTIFIER, "Expect parameter name."));
+            } while (match(COMMA));
+        }
+        consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+        consume(LEFT_BRACE, "Expect '{' before function body.");
+        List<Stmt> body = block();
+        return Function.of(name, parameters, body);
     }
 
     private Expr expression() {

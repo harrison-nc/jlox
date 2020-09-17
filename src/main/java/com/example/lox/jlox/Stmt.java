@@ -16,6 +16,8 @@ public abstract class Stmt {
 
         R visitExpressionStmt(Expression stmt);
 
+        R visitFunctionStmt(Function stmt);
+
         R visitIfStmt(If stmt);
 
         R visitPrintStmt(Print stmt);
@@ -66,6 +68,40 @@ public abstract class Stmt {
 
         public Expr expression() {
             return expression;
+        }
+    }
+
+    public static class Function extends Stmt {
+
+        private final Token name;
+        private final List<Token> params;
+        private final List<Stmt> body;
+
+        private Function(Token name, List<Token> params, List<Stmt> body) {
+            this.name = name;
+            this.params = params;
+            this.body = body;
+        }
+
+        public static Function of(Token name, List<Token> params, List<Stmt> body) {
+            return new Function(name, params, body);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitFunctionStmt(this);
+        }
+
+        public Token name() {
+            return name;
+        }
+
+        public List<Token> params() {
+            return params;
+        }
+
+        public List<Stmt> body() {
+            return body;
         }
     }
 

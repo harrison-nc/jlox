@@ -9,16 +9,32 @@ import com.example.lox.jlox.scanner.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.lox.jlox.interpreter.ClockFn.clock;
 import static com.example.lox.jlox.scanner.TokenType.OR;
 import static com.example.lox.jlox.tool.Util.println;
 import static com.example.lox.jlox.tool.Util.stringify;
 
 public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private final Environment globals = new Environment();
+    final Environment globals = new Environment();
     private Environment environment = globals;
 
     public Interpreter() {
+        LoxCallable clock = new LoxCallable() {
+
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString() {
+                return "<native fn>";
+            }
+        };
         globals.define("clock", clock);
     }
 
@@ -200,6 +216,13 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
     }
 
     @Override
+    public Void visitFunctionStmt(Stmt.Function stmt) {
+        LoxFunction function = new LoxFunction(stmt);
+        environment.define(stmt.name().lexeme(), function);
+        return null;
+    }
+
+    @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression());
         println(stringify(value));
@@ -236,7 +259,7 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
         stmt.accept(this);
     }
 
-    private void executeBlock(List<Stmt> statements, Environment environment) {
+    void executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
 
         try {
@@ -248,24 +271,5 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
         } finally {
             this.environment = previous;
         }
-    }
-}
-
-final class ClockFn implements LoxCallable {
-    final static ClockFn clock = new ClockFn();
-
-    @Override
-    public int arity() {
-        return 0;
-    }
-
-    @Override
-    public Object call(Interpreter interpreter, List<Object> arguments) {
-        return (double) System.currentTimeMillis() / 1000.0;
-    }
-
-    @Override
-    public String toString() {
-        return "<native fn>";
     }
 }
