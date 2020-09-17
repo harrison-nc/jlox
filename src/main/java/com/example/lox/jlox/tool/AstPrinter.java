@@ -2,6 +2,8 @@ package com.example.lox.jlox.tool;
 
 import com.example.lox.jlox.Expr;
 
+import java.util.List;
+
 import static com.example.lox.jlox.scanner.TokenType.OR;
 import static com.example.lox.jlox.tool.Util.stringify;
 
@@ -54,6 +56,14 @@ public class AstPrinter implements Expr.Visitor<String> {
             return parenthesize("or", expr.left(), expr.right());
         }
         return parenthesize("and", expr.left(), expr.right());
+    }
+
+    @Override
+    public String visitCallExpr(Expr.Call expr) {
+        String callee = expr.callee().accept(this);
+        List<Expr> arguments = expr.arguments();
+        Expr[] exprs = arguments.toArray(new Expr[0]);
+        return parenthesize(callee, exprs);
     }
 
     private String parenthesize(String name, Expr... exprs) {

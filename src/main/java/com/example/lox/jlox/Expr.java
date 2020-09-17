@@ -2,6 +2,8 @@ package com.example.lox.jlox;
 
 import com.example.lox.jlox.scanner.Token;
 
+import java.util.List;
+
 public abstract class Expr {
     private Expr() {
     }
@@ -13,6 +15,8 @@ public abstract class Expr {
         R visitAssignExpr(Assign expr);
 
         R visitBinaryExpr(Binary expr);
+
+        R visitCallExpr(Call expr);
 
         R visitGroupingExpr(Grouping expr);
 
@@ -84,6 +88,40 @@ public abstract class Expr {
 
         public Expr right() {
             return right;
+        }
+    }
+
+    public static class Call extends Expr {
+
+        private final Expr callee;
+        private final Token paren;
+        private final List<Expr> arguments;
+
+        private Call(Expr callee, Token paren, List<Expr> arguments) {
+            this.callee = callee;
+            this.paren = paren;
+            this.arguments = arguments;
+        }
+
+        public static Call of(Expr callee, Token paren, List<Expr> arguments) {
+            return new Call(callee, paren, arguments);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitCallExpr(this);
+        }
+
+        public Expr callee() {
+            return callee;
+        }
+
+        public Token paren() {
+            return paren;
+        }
+
+        public List<Expr> arguments() {
+            return arguments;
         }
     }
 
