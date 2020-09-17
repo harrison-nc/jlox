@@ -13,6 +13,7 @@ statement      ::= exprStmt
                    | forStmt
                    | whileStmt
                    | returnStmt
+                   | breakStmt
                    | block ;
 
 ifStmt         ::= "if" "(" expression ")" statement
@@ -23,6 +24,7 @@ forStmt        ::= "for" "(" ( varDecl | exprStmt | ";" )
                              expression? ")" statement ;
 
 whileStmt      ::= "while" "(" expression ")" statement ;
+breakStmt      ::= "break" ";" ;
 block          ::= "{" declaration* "}" ;
 returnStmt     ::= "return" expression? ";" ;
 exprStmt       ::= expression ";" ;
