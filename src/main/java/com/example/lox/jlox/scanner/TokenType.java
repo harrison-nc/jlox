@@ -19,13 +19,14 @@ public enum TokenType {
     IDENTIFIER, STRING, NUMBER,
 
     // Keywords.
-    AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
+    AND, BREAK, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
     RETURN, SUPER, THIS, TRUE, VAR, WHILE,
 
     EOF;
 
     private static final Map<String, TokenType> keywords = Map.ofEntries(
             entry("and", AND),
+            entry("break", BREAK),
             entry("class", CLASS),
             entry("else", ELSE),
             entry("false", FALSE),

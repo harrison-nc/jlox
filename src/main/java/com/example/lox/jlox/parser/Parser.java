@@ -102,6 +102,10 @@ public final class Parser {
             return whileStatement();
         } else if (match(RETURN)) {
             return returnStatement();
+        } else if (match(BREAK)) {
+            Token token = previous();
+            consume(SEMICOLON, "Expect ';' after 'break'.");
+            return Break.of(token);
         } else if (match(LEFT_BRACE)) {
             return Block.of(block());
         } else {
