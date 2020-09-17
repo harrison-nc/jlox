@@ -79,6 +79,8 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
                     return (double) left + (double) right;
                 } else {
                     // Treat the operands as String value.
+                    left = !(left instanceof String) ? stringify(left) : left;
+                    right = !(right instanceof String) ? stringify(right) : right;
                     return left + "" + right;
                 }
             case SLASH:
