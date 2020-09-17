@@ -13,6 +13,7 @@ statement      ::= exprStmt
                    | forStmt
                    | whileStmt
                    | printStmt
+                   | returnStmt
                    | block ;
 
 exprStmt       ::= expression ";" ;
@@ -26,6 +27,7 @@ forStmt        ::= "for" "(" ( varDecl | exprStmt | ";" )
 whileStmt      ::= "while" "(" expression ")" statement ;
 printStmt      ::= "print" expression ";" ;
 block          ::= "{" declaration* "}" ;
+returnStmt     ::= "return" expression? ";" ;
 
 expression     ::= assignment ;
 assignment     ::= IDENDIFIER "=" assignment | logic_or ;

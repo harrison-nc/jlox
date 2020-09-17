@@ -22,6 +22,8 @@ public abstract class Stmt {
 
         R visitPrintStmt(Print stmt);
 
+        R visitReturnStmt(Return stmt);
+
         R visitVarStmt(Var stmt);
 
         R visitWhileStmt(While stmt);
@@ -158,6 +160,34 @@ public abstract class Stmt {
 
         public Expr expression() {
             return expression;
+        }
+    }
+
+    public static class Return extends Stmt {
+
+        private final Token keyword;
+        private final Expr value;
+
+        private Return(Token keyword, Expr value) {
+            this.keyword = keyword;
+            this.value = value;
+        }
+
+        public static Return of(Token keyword, Expr value) {
+            return new Return(keyword, value);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitReturnStmt(this);
+        }
+
+        public Token keyword() {
+            return keyword;
+        }
+
+        public Expr value() {
+            return value;
         }
     }
 

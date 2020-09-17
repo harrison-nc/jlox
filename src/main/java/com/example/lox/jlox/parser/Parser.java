@@ -73,6 +73,8 @@ public final class Parser {
             return whileStatement();
         } else if (match(PRINT)) {
             return printStatement();
+        } else if (match(RETURN)) {
+            return returnStatement();
         } else if (match(LEFT_BRACE)) {
             return Block.of(block());
         } else {
@@ -161,6 +163,17 @@ public final class Parser {
         Expr value = expression();
         consume(SEMICOLON, "Expect ';' after value.");
         return Print.of(value);
+    }
+
+    private Stmt returnStatement() {
+        Token keyword = previous();
+        Expr value = null;
+        if (!check(SEMICOLON)) {
+            value = expression();
+        }
+
+        consume(SEMICOLON, "Expect ';' after return value.");
+        return Return.of(keyword, value);
     }
 
     private Stmt expressionStatement() {
