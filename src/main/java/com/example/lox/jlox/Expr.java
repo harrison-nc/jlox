@@ -5,13 +5,13 @@ import com.example.lox.jlox.scanner.Token;
 import java.util.List;
 
 public abstract class Expr {
+
     private Expr() {
     }
 
     public abstract <R> R accept(Visitor<R> visitor);
 
     public interface Visitor<R> {
-
         R visitAssignExpr(Assign expr);
 
         R visitBinaryExpr(Binary expr);
@@ -31,8 +31,8 @@ public abstract class Expr {
         R visitFunExpr(Fun expr);
     }
 
-    public static class Assign extends Expr {
 
+    public static final class Assign extends Expr {
         private final Token name;
         private final Expr value;
 
@@ -44,6 +44,7 @@ public abstract class Expr {
         public static Assign of(Token name, Expr value) {
             return new Assign(name, value);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -59,8 +60,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Binary extends Expr {
-
+    public static final class Binary extends Expr {
         private final Expr left;
         private final Token operator;
         private final Expr right;
@@ -74,6 +74,7 @@ public abstract class Expr {
         public static Binary of(Expr left, Token operator, Expr right) {
             return new Binary(left, operator, right);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -93,8 +94,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Call extends Expr {
-
+    public static final class Call extends Expr {
         private final Expr callee;
         private final Token paren;
         private final List<Expr> arguments;
@@ -108,6 +108,7 @@ public abstract class Expr {
         public static Call of(Expr callee, Token paren, List<Expr> arguments) {
             return new Call(callee, paren, arguments);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -127,8 +128,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Grouping extends Expr {
-
+    public static final class Grouping extends Expr {
         private final Expr expression;
 
         private Grouping(Expr expression) {
@@ -138,6 +138,7 @@ public abstract class Expr {
         public static Grouping of(Expr expression) {
             return new Grouping(expression);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -149,8 +150,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Literal extends Expr {
-
+    public static final class Literal extends Expr {
         private final Object value;
 
         private Literal(Object value) {
@@ -160,6 +160,7 @@ public abstract class Expr {
         public static Literal of(Object value) {
             return new Literal(value);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -171,8 +172,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Logical extends Expr {
-
+    public static final class Logical extends Expr {
         private final Expr left;
         private final Token operator;
         private final Expr right;
@@ -186,6 +186,7 @@ public abstract class Expr {
         public static Logical of(Expr left, Token operator, Expr right) {
             return new Logical(left, operator, right);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -205,8 +206,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Unary extends Expr {
-
+    public static final class Unary extends Expr {
         private final Token operator;
         private final Expr right;
 
@@ -218,6 +218,7 @@ public abstract class Expr {
         public static Unary of(Token operator, Expr right) {
             return new Unary(operator, right);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -233,8 +234,7 @@ public abstract class Expr {
         }
     }
 
-    public static class Variable extends Expr {
-
+    public static final class Variable extends Expr {
         private final Token name;
 
         private Variable(Token name) {
@@ -244,6 +244,7 @@ public abstract class Expr {
         public static Variable of(Token name) {
             return new Variable(name);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {

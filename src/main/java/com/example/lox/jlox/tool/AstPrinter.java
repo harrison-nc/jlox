@@ -50,10 +50,6 @@ class ExprAstPrinter implements Expr.Visitor<String> {
         this.astPrinter = astPrinter;
     }
 
-    String print(Expr expr) {
-        return expr.accept(this);
-    }
-
     @Override
     public String visitBinaryExpr(Expr.Binary expr) {
         return parenthesize(expr.operator().lexeme(), expr.left(), expr.right());
@@ -146,6 +142,11 @@ class StmtAstPrinter implements Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitBreakStmt(Stmt.Break stmt) {
+        return "(break)";
+    }
+
+    @Override
     public String visitBlockStmt(Stmt.Block stmt) {
         Stmt[] body = stmt.statements().toArray(new Stmt[0]);
         return "(do %s)".formatted(print(body));
@@ -181,15 +182,6 @@ class StmtAstPrinter implements Stmt.Visitor<String> {
         }
         return "(if %s %s %s)"
                 .formatted(condition, thenBranch, elseBranch);
-    }
-
-    @Override
-    public String visitPrintStmt(Stmt.Print stmt) {
-        String value = "";
-        if (stmt.expression() != null) {
-            value = stmt.expression().accept(astPrinter);
-        }
-        return "(print %s)".formatted(value);
     }
 
     @Override
