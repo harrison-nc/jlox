@@ -1,0 +1,60 @@
+// functions
+fun sayHi(first, last) {
+    print("Hi, " + first + " " + last + "!");
+}
+
+sayHi("Dear", "Reader");
+
+fun benchmark() {
+    fun fib(n) {
+        if (n <= 1) return n;
+        return fib(n - 2) + fib(n - 1);
+    }
+
+    var start = clock();
+    var fib5 = fib(5);
+    var end = clock();
+    print("time: " + (end - start));
+}
+
+benchmark();
+
+fun makeCounter() {
+    var i = 0;
+
+    fun count() {
+        i = i + 1;
+        return i;
+    }
+
+    return count;
+}
+
+var counter = makeCounter();
+print("calling count closure: " + counter());
+print("calling count closure: " + counter());
+
+fun doMath() {
+    fun add(a, b) {
+        return a + b;
+    }
+
+    print(add(5, 10));
+
+    var minus = fun(a, b) {
+        return a - b;
+    };
+
+    var res = minus(10, 5);
+    print("10 - 5 => " + res);
+}
+
+fun thrice(fn) {
+    for (var i = 1; i <= 3; i = i + 1) {
+        fn(i);
+    }
+}
+
+thrice(fun(a){
+    print("calling anonymous fn: " + a);
+});
