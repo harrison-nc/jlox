@@ -5,13 +5,13 @@ import com.example.lox.jlox.scanner.Token;
 import java.util.List;
 
 public abstract class Stmt {
+
     private Stmt() {
     }
 
     public abstract <R> R accept(Visitor<R> visitor);
 
     public interface Visitor<R> {
-
         R visitBlockStmt(Block stmt);
 
         R visitExpressionStmt(Expression stmt);
@@ -29,8 +29,8 @@ public abstract class Stmt {
         R visitBreakStmt(Break stmt);
     }
 
-    public static class Block extends Stmt {
 
+    public static final class Block extends Stmt {
         private final List<Stmt> statements;
 
         private Block(List<Stmt> statements) {
@@ -40,6 +40,7 @@ public abstract class Stmt {
         public static Block of(List<Stmt> statements) {
             return new Block(statements);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -51,8 +52,7 @@ public abstract class Stmt {
         }
     }
 
-    public static class Expression extends Stmt {
-
+    public static final class Expression extends Stmt {
         private final Expr expression;
 
         private Expression(Expr expression) {
@@ -62,6 +62,7 @@ public abstract class Stmt {
         public static Expression of(Expr expression) {
             return new Expression(expression);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -73,7 +74,7 @@ public abstract class Stmt {
         }
     }
 
-    public static class Function extends Stmt {
+    public static final class Function extends Stmt {
 
         private final Token name;
         private final List<Token> params;
@@ -107,7 +108,7 @@ public abstract class Stmt {
         }
     }
 
-    public static class If extends Stmt {
+    public static final class If extends Stmt {
 
         private final Expr condition;
         private final Stmt thenBranch;
@@ -122,6 +123,7 @@ public abstract class Stmt {
         public static If of(Expr condition, Stmt thenBranch, Stmt elseBranch) {
             return new If(condition, thenBranch, elseBranch);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -141,7 +143,7 @@ public abstract class Stmt {
         }
     }
 
-    public static class Return extends Stmt {
+    public static final class Return extends Stmt {
 
         private final Token keyword;
         private final Expr value;
@@ -169,7 +171,7 @@ public abstract class Stmt {
         }
     }
 
-    public static class Var extends Stmt {
+    public static final class Var extends Stmt {
 
         private final Token name;
         private final Expr initializer;
@@ -182,6 +184,7 @@ public abstract class Stmt {
         public static Var of(Token name, Expr initializer) {
             return new Var(name, initializer);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -197,8 +200,7 @@ public abstract class Stmt {
         }
     }
 
-    public static class While extends Stmt {
-
+    public static final class While extends Stmt {
         private final Expr condition;
         private final Stmt body;
 
@@ -210,6 +212,7 @@ public abstract class Stmt {
         public static While of(Expr condition, Stmt body) {
             return new While(condition, body);
         }
+
 
         @Override
         public <R> R accept(Visitor<R> visitor) {
@@ -247,3 +250,4 @@ public abstract class Stmt {
         }
     }
 }
+
