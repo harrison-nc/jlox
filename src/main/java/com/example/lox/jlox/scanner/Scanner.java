@@ -77,7 +77,7 @@ public final class Scanner {
         }
 
         var text = source.substring(start, current);
-        var tokenType = TokenType.get(text);
+        var tokenType = TokenType.keyword(text);
 
         if (tokenType == null) {
             tokenType = IDENTIFIER;
