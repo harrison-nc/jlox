@@ -49,7 +49,7 @@ public enum TokenType {
      * @param name token name
      * @return a token type or null
      */
-    public static TokenType get(String name) {
+    public static TokenType keyword(String name) {
         return keywords.get(name);
     }
 }
