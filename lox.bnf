@@ -16,7 +16,6 @@ statement      ::= exprStmt
                    | returnStmt
                    | block ;
 
-exprStmt       ::= expression ";" ;
 ifStmt         ::= "if" "(" expression ")" statement
                     ( "else" statement )? ;
 
@@ -28,6 +27,7 @@ whileStmt      ::= "while" "(" expression ")" statement ;
 printStmt      ::= "print" expression ";" ;
 block          ::= "{" declaration* "}" ;
 returnStmt     ::= "return" expression? ";" ;
+exprStmt       ::= expression ";" ;
 
 expression     ::= assignment ;
 assignment     ::= IDENDIFIER "=" assignment | logic_or ;
@@ -43,4 +43,7 @@ arguments      ::= expression ( "," expression )* ;
 
 primary        ::= NUMBER | STRING | "false" | "true" | "nil"
                    | "(" expression ")"
+                   | fun_expr
                    | IDENDIFIER ;
+
+fun_expr        ::= "fun" "(" parameters ")" | logic_or ;

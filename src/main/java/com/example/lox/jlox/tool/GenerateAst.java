@@ -26,7 +26,8 @@ public class GenerateAst {
                     "Literal  : Object value",
                     "Logical  : Expr left, Token operator, Expr right",
                     "Unary    : Token operator, Expr right",
-                    "Variable : Token name"
+                    "Variable : Token name",
+                    "Fun : Token keyword, List<Token> params, List<Stmt> body"
             ));
             defineAst(outputDir, "Stmt", List.of(
                     "Block     : List<Stmt> statements",
@@ -79,7 +80,7 @@ public class GenerateAst {
             String typeName = type.split(":")[0].trim();
             writer.println();
             writer.println("        R visit" + typeName + baseName + "(" +
-                    typeName + " " + baseName.toLowerCase() + ");");
+                           typeName + " " + baseName.toLowerCase() + ");");
         }
 
         writer.println("    }");
@@ -107,7 +108,7 @@ public class GenerateAst {
     private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
         writer.println();
         writer.println("    public static class " + className + " extends " +
-                baseName + " {");
+                       baseName + " {");
 
 
         // Constructor.
@@ -131,7 +132,7 @@ public class GenerateAst {
         writer.println("        @Override");
         writer.println("        public <R> R accept(Visitor<R> visitor) {");
         writer.println("            return visitor.visit" +
-                className + baseName + "(this);");
+                       className + baseName + "(this);");
         writer.println("        }");
 
         // Fields.
