@@ -34,7 +34,7 @@ public abstract class Stmt {
         private final List<Stmt> statements;
 
         private Block(List<Stmt> statements) {
-            this.statements = statements;
+            this.statements = List.copyOf(statements);
         }
 
         public static Block of(List<Stmt> statements) {
@@ -81,8 +81,8 @@ public abstract class Stmt {
 
         private Function(Token name, List<Token> params, List<Stmt> body) {
             this.name = name;
-            this.params = params;
-            this.body = body;
+            this.params = List.copyOf(params);
+            this.body = List.copyOf(body);
         }
 
         public static Function of(Token name, List<Token> params, List<Stmt> body) {

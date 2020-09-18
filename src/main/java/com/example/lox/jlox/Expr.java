@@ -27,6 +27,8 @@ public abstract class Expr {
         R visitUnaryExpr(Unary expr);
 
         R visitVariableExpr(Variable expr);
+
+        R visitFunExpr(Fun expr);
     }
 
     public static class Assign extends Expr {
@@ -100,7 +102,7 @@ public abstract class Expr {
         private Call(Expr callee, Token paren, List<Expr> arguments) {
             this.callee = callee;
             this.paren = paren;
-            this.arguments = arguments;
+            this.arguments = List.copyOf(arguments);
         }
 
         public static Call of(Expr callee, Token paren, List<Expr> arguments) {
@@ -250,6 +252,40 @@ public abstract class Expr {
 
         public Token name() {
             return name;
+        }
+    }
+
+    public static class Fun extends Expr {
+
+        private final Token keyword;
+        private final List<Token> params;
+        private final List<Stmt> body;
+
+        private Fun(Token keyword, List<Token> params, List<Stmt> body) {
+            this.keyword = keyword;
+            this.params = List.copyOf(params);
+            this.body = List.copyOf(body);
+        }
+
+        public static Fun of(Token keyword, List<Token> params, List<Stmt> body) {
+            return new Fun(keyword, params, body);
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitFunExpr(this);
+        }
+
+        public Token keyword() {
+            return keyword;
+        }
+
+        public List<Token> params() {
+            return params;
+        }
+
+        public List<Stmt> body() {
+            return body;
         }
     }
 }

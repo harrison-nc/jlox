@@ -3,6 +3,7 @@ package com.example.lox.jlox.interpreter;
 import com.example.lox.jlox.Expr;
 import com.example.lox.jlox.Lox;
 import com.example.lox.jlox.Stmt;
+import com.example.lox.jlox.Stmt.Function;
 import com.example.lox.jlox.scanner.Token;
 import com.example.lox.jlox.scanner.TokenType;
 
@@ -169,6 +170,12 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
         Object value = evaluate(expr.value());
         environment.assign(expr.name(), value);
         return value;
+    }
+
+    @Override
+    public Object visitFunExpr(Expr.Fun expr) {
+        Function function = Function.of(expr.keyword(), expr.params(), expr.body());
+        return new LoxFunction(function, environment);
     }
 
     private void checkNumberOperands(Token operator, Object left, Object right) {

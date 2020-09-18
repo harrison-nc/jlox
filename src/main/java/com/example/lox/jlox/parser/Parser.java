@@ -31,7 +31,10 @@ public final class Parser {
         List<Stmt> statements = new ArrayList<>();
 
         while (!isAtEnd()) {
-            statements.add(declaration());
+            Stmt declaration = declaration();
+            if (declaration != null) {
+                statements.add(declaration);
+            }
         }
 
         return statements;
@@ -50,6 +53,32 @@ public final class Parser {
             synchronize();
             return null;
         }
+    }
+
+    private Stmt function() {
+        Token name = consume(IDENTIFIER, "Expect function name.");
+        consume(LEFT_PAREN, "Expect '(' after function name.");
+
+        List<Token> parameters = parameters();
+
+        consume(LEFT_BRACE, "Expect '{' before function body.");
+        List<Stmt> body = block();
+        return Function.of(name, parameters, body);
+    }
+
+    private List<Token> parameters() {
+        List<Token> parameters = new ArrayList<>();
+        if (!check(RIGHT_PAREN)) {
+            do {
+                if (parameters.size() >= 255) {
+                    error(peek(), "Cannot have more than 255 parameters.");
+                }
+
+                parameters.add(consume(IDENTIFIER, "Expect parameter name."));
+            } while (match(COMMA));
+        }
+        consume(RIGHT_PAREN, "Expect ')' after parameters.");
+        return parameters;
     }
 
     private Stmt varDeclaration() {
@@ -182,26 +211,6 @@ public final class Parser {
         return Expression.of(expr);
     }
 
-    private Stmt function() {
-        Token name = consume(IDENTIFIER, "Expect function name.");
-        consume(LEFT_PAREN, "Expect '(' after %s name.");
-        List<Token> parameters = new ArrayList<>();
-        if (!check(RIGHT_PAREN)) {
-            do {
-                if (parameters.size() >= 255) {
-                    error(peek(), "Cannot have more than 255 parameters.");
-                }
-
-                parameters.add(consume(IDENTIFIER, "Expect parameter name."));
-            } while (match(COMMA));
-        }
-        consume(RIGHT_PAREN, "Expect ')' after parameters.");
-
-        consume(LEFT_BRACE, "Expect '{' before function body.");
-        List<Stmt> body = block();
-        return Function.of(name, parameters, body);
-    }
-
     private Expr expression() {
         return assignment();
     }
@@ -326,6 +335,17 @@ public final class Parser {
             Expr expr = expression();
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
             return Grouping.of(expr);
+        } else if (match(FUN)) {
+            Token token = previous();
+
+            consume(LEFT_PAREN, "Expect '(' after function name.");
+
+            List<Token> parameters = parameters();
+
+            consume(LEFT_BRACE, "Expect '{' after parameters.");
+
+            List<Stmt> body = block();
+            return Fun.of(token, parameters, body);
         } else {
             throw error(peek(), "Expect an expression");
         }

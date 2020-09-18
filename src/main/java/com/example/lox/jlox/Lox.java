@@ -87,12 +87,12 @@ public class Lox {
         }
     }
 
-    private static List<Token> scan(String source) {
+    public static List<Token> scan(String source) {
         Scanner scanner = Scanner.of(source);
         return scanner.scan();
     }
 
-    private static List<Stmt> parse(List<Token> tokens) {
+    public static List<Stmt> parse(List<Token> tokens) {
         if (hadError || null == tokens) {
             return new ArrayList<>(1);
         }
@@ -101,7 +101,7 @@ public class Lox {
         return parser.parse();
     }
 
-    private static void interpret(List<Stmt> statements) {
+    public static void interpret(List<Stmt> statements) {
         if (hadError || null == statements) {
             return;
         }

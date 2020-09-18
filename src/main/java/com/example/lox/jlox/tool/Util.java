@@ -16,7 +16,7 @@ public final class Util {
     }
 
     public static void print(Expr expr, String args) {
-        print(AstPrinter.printExpr(expr) + args);
+        print(expr + args);
     }
 
     public static void print(Token token) {
