@@ -39,7 +39,7 @@ public abstract class AstPrinter {
         String ast = printer.print();
         println(ast);
 
-        Lox.interpret(stmts);
+        Lox.execute(stmts);
     }
 
     public abstract String print();

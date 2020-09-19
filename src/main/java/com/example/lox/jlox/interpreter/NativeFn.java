@@ -1,29 +1,26 @@
 package com.example.lox.jlox.interpreter;
 
 import com.example.lox.jlox.Lox;
-import com.example.lox.jlox.scanner.Token;
-import com.example.lox.jlox.scanner.TokenType;
 import com.example.lox.jlox.tool.AstPrinter;
+import com.example.lox.jlox.tool.Util;
 
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static com.example.lox.jlox.scanner.TokenType.EOF;
 import static com.example.lox.jlox.tool.Util.println;
 import static com.example.lox.jlox.tool.Util.stringify;
 
 final class NativeFn {
-    static final LoxCallable sexpr = fn(1, NativeFn::sexpr);
-    static final LoxCallable clock = fn(0, NativeFn::clock);
+    static final LoxCallable sexpr = fn(1, NativeFn::sexprFn);
+    static final LoxCallable clock = fn(0, NativeFn::clockFn);
     static final LoxCallable print = fn(1, NativeFn::printFn);
-    static final LoxCallable eval = fn(1, NativeFn::eval);
+    static final LoxCallable eval = fn(1, NativeFn::evalFn);
 
-    private static Object eval(Interpreter<Void> interpreter, List<Object> arguments) {
-        Token token = Token.of(EOF, "end of file", null, 0);
+    private static Object evalFn(Interpreter<?> interpreter, List<Object> arguments) {
         if (null == arguments) {
-            Lox.runtimeError(new RuntimeError(token, "eval: requires an argument."));
+            Util.err("[error] eval: no argument provided");
         } else if (arguments.size() > 1) {
-            Lox.runtimeError(new RuntimeError(token, "eval: requires only one argument."));
+            Util.err("[error] eval: too many argument provided");
         } else {
             Object value = arguments.get(0);
             if (value instanceof String) {
@@ -31,31 +28,31 @@ final class NativeFn {
                     String source = (String) value;
                     var tokenList = Lox.scan(source);
                     var stmtList = Lox.parse(tokenList);
-                    Lox.interpret(stmtList);
+                    return new BaseInterpreter().execute(stmtList);
                 } catch (RuntimeError err) {
-                    println("[error] eval: " + err.getMessage());
-                    return null;
+                    Util.err("[error] eval: an error occurred while evaluating expression.\nmessage: [%s]"
+                            .formatted(err.getMessage()));
                 }
             }
         }
         return null;
     }
 
-    private static  Object clock(Interpreter<Void> interpreter, List<Object> arguments) {
+    private static  Object clockFn(Interpreter<?> interpreter, List<Object> arguments) {
         return (double) System.currentTimeMillis() / 1000.0;
     }
 
-    private static  Object printFn(Interpreter<Void> interpreter, List<Object> arguments) {
+    private static  Object printFn(Interpreter<?> interpreter, List<Object> arguments) {
         if (null != arguments && arguments.size() > 0) {
             Object value = arguments.get(0);
-            println(stringify(value));
-        } else {
-            println("");
+            if (null != value) {
+                println(stringify(value));
+            }
         }
         return null;
     }
 
-    private static  Object sexpr(Interpreter<Void> interpreter, List<Object> arguments) {
+    private static  Object sexprFn(Interpreter<?> interpreter, List<Object> arguments) {
         if (null != arguments && arguments.size() > 0) {
             Object value = arguments.get(0);
             if (value instanceof String) {
@@ -70,13 +67,11 @@ final class NativeFn {
                     return null;
                 }
             }
-        } else {
-            println("");
         }
         return null;
     }
 
-    private static LoxCallable fn(final int arity, final BiFunction<Interpreter<Void>, List<Object>, Object> call) {
+    private static LoxCallable fn(final int arity, final BiFunction<Interpreter<?>, List<Object>, Object> call) {
         return new LoxCallable() {
             @Override
             public int arity() {
@@ -84,7 +79,7 @@ final class NativeFn {
             }
 
             @Override
-            public Object call(Interpreter<Void> interpreter, List<Object> arguments) {
+            public Object call(Interpreter<?> interpreter, List<Object> arguments) {
                 return call.apply(interpreter, arguments);
             }
 

@@ -27,6 +27,10 @@ public final class Util {
         System.out.println(message);
     }
 
+    public static void println() {
+        System.out.println();
+    }
+
     public static void printf(String format, Object... args) {
         System.out.printf(format, args);
     }
@@ -44,8 +48,6 @@ public final class Util {
                 text = text.substring(0, text.length() - 2);
             }
             return text;
-        } else if (object instanceof String) {
-            return "\"" + object + "\"";
         } else {
             return object.toString();
         }

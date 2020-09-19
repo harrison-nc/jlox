@@ -1,5 +1,7 @@
 package com.example.lox.jlox;
 
+import com.example.lox.jlox.interpreter.BaseInterpreter;
+import com.example.lox.jlox.interpreter.Interpreter;
 import com.example.lox.jlox.interpreter.MainInterpreter;
 import com.example.lox.jlox.interpreter.RuntimeError;
 import com.example.lox.jlox.parser.Parser;
@@ -19,14 +21,13 @@ import java.util.List;
 
 import static com.example.lox.jlox.Ex.EX_DATAERR;
 import static com.example.lox.jlox.Ex.EX_SOFTWARE;
-import static com.example.lox.jlox.tool.Util.print;
-import static com.example.lox.jlox.tool.Util.println;
+import static com.example.lox.jlox.tool.Util.*;
 
 /**
  * Lox Interpreter.
  */
 public class Lox {
-    private static final MainInterpreter interpreter = new MainInterpreter();
+    private static Interpreter<?> interpreter;
     private static boolean hadRuntimeError = false;
     private static boolean hadError = false;
 
@@ -38,8 +39,10 @@ public class Lox {
             println("Usage: jlox [script]");
             System.exit(Ex.EX_USAGE.code());
         } else if (args.length == 1) {
+            interpreter = new MainInterpreter();
             runFile(args[0]);
         } else {
+            interpreter = new BaseInterpreter();
             runPrompt();
         }
     }
@@ -49,7 +52,7 @@ public class Lox {
 
         var tokenList = scan(new String(bytes, Charset.defaultCharset()));
         var stmtList = parse(tokenList);
-        interpret(stmtList);
+        execute(stmtList);
 
         checkForError();
         // Exit normally if there were no errors.
@@ -81,7 +84,9 @@ public class Lox {
 
             var tokenList = scan(line);
             var stmtList = parse(tokenList);
-            interpret(stmtList);
+            var result = execute(stmtList);
+
+            println(stringify(result));
 
             hadError = false;
         }
@@ -101,12 +106,12 @@ public class Lox {
         return parser.parse();
     }
 
-    public static void interpret(List<Stmt> statements) {
+    public static Object execute(List<Stmt> statements) {
         if (hadError || null == statements) {
-            return;
+            return null;
         }
 
-        interpreter.interpret(statements);
+        return interpreter.execute(statements);
     }
 
     public static void error(int line, String message) {
@@ -126,7 +131,7 @@ public class Lox {
     }
 
     public static void runtimeError(RuntimeError error) {
-        Util.err(error.getMessage() + "\n[line " + error.token().line() + "]");
+        Util.err("[line " + error.token().line() + "] " + error.getMessage());
         hadRuntimeError = true;
     }
 
