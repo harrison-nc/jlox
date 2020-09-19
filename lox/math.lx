@@ -1,0 +1,13 @@
+fun add(a, b) {
+    return a + b;
+}
+
+var minus = fun(a, b) {
+    return a - b;
+};
+
+var res = add(5, 5);
+print("5 + 5 = " + res);
+
+res = minus(10, 5);
+print("10 - 5 = " + res);

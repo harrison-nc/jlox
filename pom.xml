@@ -55,7 +55,7 @@
                     <configuration>
                         <archive>
                             <manifest>
-                                <mainClass>com.example.lox.jlox.Lox</mainClass>
+                                <mainClass>com.example.lox.LoxRuntime</mainClass>
                             </manifest>
                         </archive>
                     </configuration>

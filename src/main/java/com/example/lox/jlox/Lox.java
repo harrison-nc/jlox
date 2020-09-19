@@ -33,7 +33,7 @@ public class Lox {
     private Lox() {
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void run(String[] args) throws IOException {
         if (args.length > 1) {
             println("Usage: jlox [script]");
             System.exit(Ex.EX_USAGE.code());
