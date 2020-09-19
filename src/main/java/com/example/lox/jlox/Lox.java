@@ -1,6 +1,6 @@
 package com.example.lox.jlox;
 
-import com.example.lox.jlox.interpreter.Interpreter;
+import com.example.lox.jlox.interpreter.MainInterpreter;
 import com.example.lox.jlox.interpreter.RuntimeError;
 import com.example.lox.jlox.parser.Parser;
 import com.example.lox.jlox.scanner.Scanner;
@@ -26,7 +26,7 @@ import static com.example.lox.jlox.tool.Util.println;
  * Lox Interpreter.
  */
 public class Lox {
-    private static final Interpreter interpreter = new Interpreter();
+    private static final MainInterpreter interpreter = new MainInterpreter();
     private static boolean hadRuntimeError = false;
     private static boolean hadError = false;
 

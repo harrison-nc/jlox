@@ -14,11 +14,11 @@ final class NativeFn {
     static final LoxCallable clock = fn(0, NativeFn::clock);
     static final LoxCallable print = fn(1, NativeFn::printFn);
 
-    private static  Object clock(Interpreter interpreter, List<Object> arguments) {
+    private static  Object clock(Interpreter<Void> interpreter, List<Object> arguments) {
         return (double) System.currentTimeMillis() / 1000.0;
     }
 
-    private static  Object printFn(Interpreter interpreter, List<Object> arguments) {
+    private static  Object printFn(Interpreter<Void> interpreter, List<Object> arguments) {
         if (null != arguments && arguments.size() > 0) {
             Object value = arguments.get(0);
             println(stringify(value));
@@ -28,7 +28,7 @@ final class NativeFn {
         return null;
     }
 
-    private static  Object sexpr(Interpreter interpreter, List<Object> arguments) {
+    private static  Object sexpr(Interpreter<Void> interpreter, List<Object> arguments) {
         if (null != arguments && arguments.size() > 0) {
             Object value = arguments.get(0);
             if (value instanceof String) {
@@ -49,7 +49,7 @@ final class NativeFn {
         return null;
     }
 
-    private static LoxCallable fn(final int arity, final BiFunction<Interpreter, List<Object>, Object> call) {
+    private static LoxCallable fn(final int arity, final BiFunction<Interpreter<Void>, List<Object>, Object> call) {
         return new LoxCallable() {
             @Override
             public int arity() {
@@ -57,7 +57,7 @@ final class NativeFn {
             }
 
             @Override
-            public Object call(Interpreter interpreter, List<Object> arguments) {
+            public Object call(Interpreter<Void> interpreter, List<Object> arguments) {
                 return call.apply(interpreter, arguments);
             }
 
