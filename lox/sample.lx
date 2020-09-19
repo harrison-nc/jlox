@@ -1,25 +1,22 @@
 var string =
-            "The quick brown fox jumped over the lazy dog.
-            Roll, roll, roll your boat gently down the stream
-            merrily, merrily, merrily live is but a dream.";
+"The quick brown fox jumped over the lazy dog.
+Roll, roll, roll your boat gently down the stream
+merrily, merrily, merrily live is but a dream.";
 
-print(string);
-sexpr("var a = 1;
-       while (a < 100) {
-           if (a >= 10) {
-               break;
-           }
-       }
-       print(a);
-");
+println(string);
 
-fun thrice(fn) {
-    for (var i = 1; i <= 3; i = i + 1) {
-        fn(i);
+var source =
+"{
+    var a = 1;
+    while (a < 100) {
+        if (a >= 10) {
+            break;
+        }
+        a = a + a;
     }
-}
+    println(a);
+}";
 
-thrice(fun(a){
-    print("<anonymous fn> " + a);
-});
+expr(source);
+eval(source);
 

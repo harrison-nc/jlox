@@ -1,5 +1,6 @@
 eval("4 * 4;");
 eval("var a = 5 * 5;");
-eval("print(100);");
-eval("var i = 1000; print(i);");
-eval("if(true) print(true); else print(false);");
+eval("println(10);");
+eval("var i = 100; println(i);");
+eval("var a = 1000;", "println(a);");
+eval("if(true) println(true); else println(false);");

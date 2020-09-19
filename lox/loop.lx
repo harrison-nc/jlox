@@ -1,0 +1,16 @@
+var i;
+print("for loop");
+for (i = 100; i > 1; i = i - 1) {
+    if (i < 90) break;
+    print(".");
+}
+println("i after for: " + i);
+
+i = 100;
+print("while loop");
+while (i > 0) {
+    if(i < 50) break;
+    print(".");
+    i = i - 5;
+}
+println("i after while: " + i);

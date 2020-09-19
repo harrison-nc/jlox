@@ -20,7 +20,8 @@ public class BaseInterpreter implements Interpreter<Object> {
     public BaseInterpreter() {
         globals.define("clock", clock);
         globals.define("print", print);
-        globals.define("sexpr", sexpr);
+        globals.define("println", println);
+        globals.define("expr", expr);
         globals.define("eval", eval);
     }
 
@@ -71,22 +72,21 @@ public class BaseInterpreter implements Interpreter<Object> {
         if (function.arity() == 0) {
             return function.call(this, null);
         } else {
-            List<Object> arguments = arguments(expr, function.arity());
+            List<Object> arguments = arguments(expr, function);
             return function.call(this, arguments);
         }
     }
 
-    private List<Object> arguments(Expr.Call expr, int arity) {
+    private List<Object> arguments(Expr.Call expr, LoxCallable func) {
         List<Object> arguments = new ArrayList<>();
 
         for (Expr argument : expr.arguments()) {
             arguments.add(evaluate(argument));
         }
 
-        if (arguments.size() != arity) {
+        if (func.notVariadic() && arguments.size() != func.arity()) {
             throw new RuntimeError(expr.paren(), "Expected %d arguments but got %d."
-                    .formatted(arity,
-                            arguments.size()));
+                    .formatted(func.arity(), arguments.size()));
         }
         return arguments;
     }
@@ -245,7 +245,7 @@ public class BaseInterpreter implements Interpreter<Object> {
             try {
                 result = execute(stmt.body());
             } catch (Break breakLoop) {
-                return result;
+                break;
             }
         }
         return result;

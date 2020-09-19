@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.example.lox.jlox.scanner.TokenType.OR;
 import static com.example.lox.jlox.tool.Util.println;
@@ -19,7 +20,7 @@ public abstract class AstPrinter {
     protected AstPrinter() {
     }
 
-    public static AstPrinter stmtPrinter(List<Stmt> stmt) {
+    public static AstPrinter of(List<Stmt> stmt) {
         return new StmtPrinter(stmt);
     }
 
@@ -35,7 +36,7 @@ public abstract class AstPrinter {
         List<Token> tokens = Lox.scan(source);
         List<Stmt> stmts = Lox.parse(tokens);
 
-        AstPrinter printer = AstPrinter.stmtPrinter(stmts);
+        AstPrinter printer = AstPrinter.of(stmts);
         String ast = printer.print();
         println(ast);
 
@@ -197,12 +198,15 @@ class StmtPrinter extends AstPrinter implements Stmt.Visitor<String> {
     public String visitIfStmt(Stmt.If stmt) {
         String condition = stmt.condition().accept(astPrinter);
         String thenBranch = print(stmt.thenBranch());
-        String elseBranch = "";
+        String elseBranch = null;
         if (stmt.elseBranch() != null) {
             elseBranch = print(stmt.elseBranch());
         }
-        return "(if %s %s %s)"
-                .formatted(condition, thenBranch, elseBranch);
+        if (elseBranch == null) {
+            return "(if %s %s)".formatted(condition, thenBranch);
+        } else {
+            return "(if %s %s %s)".formatted(condition, thenBranch, elseBranch);
+        }
     }
 
     @Override
@@ -213,15 +217,13 @@ class StmtPrinter extends AstPrinter implements Stmt.Visitor<String> {
             value = stmt.value().accept(astPrinter);
         }
 
-        return "(%s %s)"
-                .formatted(stmt.keyword().lexeme(), value);
+        return "(%s %s)".formatted(stmt.keyword().lexeme(), value);
     }
 
     @Override
     public String visitVarStmt(Stmt.Var stmt) {
-        return "(def %s %s)"
-                .formatted(stmt.name().lexeme(),
-                        stmt.initializer().accept(astPrinter));
+        return "(def %s %s)".formatted(stmt.name().lexeme(),
+                stmt.initializer().accept(astPrinter));
     }
 
     @Override
@@ -232,13 +234,9 @@ class StmtPrinter extends AstPrinter implements Stmt.Visitor<String> {
     }
 
     String print(Stmt... stmts) {
-        StringBuilder builder = new StringBuilder();
-
-        for (Stmt value : stmts) {
-            builder.append(" ");
-            builder.append(value.accept(this));
-        }
-
-        return builder.toString();
+        return Stream.of(stmts)
+                .map(stmt -> stmt.accept(this))
+                .reduce((a, b) -> a + " " + b)
+                .orElse("");
     }
 }

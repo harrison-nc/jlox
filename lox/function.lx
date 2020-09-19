@@ -1,0 +1,37 @@
+fun makeCounter() {
+    var i = 0;
+
+    fun count() {
+        i = i + 1;
+        return i;
+    }
+
+    return count;
+}
+
+var counter = makeCounter();
+for (var i = 0; i < 3; i = i + 1) println("calling count closure: " + counter());
+
+fun thrice(fn) {
+    for (var i = 1; i <= 3; i = i + 1) {
+        fn(i);
+    }
+}
+
+thrice(fun(a){
+    println("<anonymous fn> " + a);
+});
+
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+
+println(fib(8));
+
+fun fac(n) {
+    if (n <= 2) return n;
+    return n * fac(n - 1);
+}
+
+println(fac(5));
