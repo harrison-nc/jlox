@@ -22,3 +22,6 @@ fun thrice(fn) {
 thrice(fun(a){
     print("<anonymous fn> " + a);
 });
+
+eval("var i = 1000; print(i);");
+eval("if(true) print(true); else print(false);");

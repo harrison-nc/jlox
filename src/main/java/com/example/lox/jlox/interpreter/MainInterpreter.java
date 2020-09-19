@@ -22,6 +22,7 @@ public final class MainInterpreter implements Interpreter<Void> {
         globals.define("clock", clock);
         globals.define("print", print);
         globals.define("sexpr", sexpr);
+        globals.define("eval", eval);
     }
 
     public void interpret(List<Stmt> statements) {
