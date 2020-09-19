@@ -10,7 +10,7 @@ import com.example.lox.jlox.scanner.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.lox.jlox.interpreter.NativeFn.print;
+import static com.example.lox.jlox.interpreter.NativeFn.*;
 import static com.example.lox.jlox.scanner.TokenType.OR;
 import static com.example.lox.jlox.tool.Util.stringify;
 
@@ -19,25 +19,9 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
     private Environment environment = globals;
 
     public Interpreter() {
-        LoxCallable clock = new LoxCallable() {
-
-            @Override
-            public int arity() {
-                return 0;
-            }
-
-            @Override
-            public Object call(Interpreter interpreter, List<Object> arguments) {
-                return (double) System.currentTimeMillis() / 1000.0;
-            }
-
-            @Override
-            public String toString() {
-                return "<native fn>";
-            }
-        };
         globals.define("clock", clock);
         globals.define("print", print);
+        globals.define("sexpr", sexpr);
     }
 
     public void interpret(List<Stmt> statements) {

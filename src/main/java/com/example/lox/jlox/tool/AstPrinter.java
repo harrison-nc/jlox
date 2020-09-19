@@ -15,12 +15,12 @@ import static com.example.lox.jlox.scanner.TokenType.OR;
 import static com.example.lox.jlox.tool.Util.println;
 import static com.example.lox.jlox.tool.Util.stringify;
 
-public class AstPrinter {
-    private AstPrinter() {
+public abstract class AstPrinter {
+    protected AstPrinter() {
     }
 
-    public static StmtAstPrinter stmtPrinter(List<Stmt> stmt) {
-        return new StmtAstPrinter(stmt);
+    public static AstPrinter stmtPrinter(List<Stmt> stmt) {
+        return new StmtPrinter(stmt);
     }
 
     public static void main(String[] args) throws IOException {
@@ -35,19 +35,35 @@ public class AstPrinter {
         List<Token> tokens = Lox.scan(source);
         List<Stmt> stmts = Lox.parse(tokens);
 
-        StmtAstPrinter printer = AstPrinter.stmtPrinter(stmts);
+        AstPrinter printer = AstPrinter.stmtPrinter(stmts);
         String ast = printer.print();
         println(ast);
 
         Lox.interpret(stmts);
     }
+
+    public abstract String print();
 }
 
-class ExprAstPrinter implements Expr.Visitor<String> {
-    private final StmtAstPrinter astPrinter;
+class ExprPrinter extends AstPrinter implements Expr.Visitor<String> {
+    private final StmtPrinter astPrinter;
+    private Expr expression;
 
-    ExprAstPrinter(StmtAstPrinter astPrinter) {
+    ExprPrinter(StmtPrinter astPrinter) {
         this.astPrinter = astPrinter;
+    }
+
+    public void expression(Expr expr) {
+        expression = expr;
+    }
+
+    @Override
+    public String print() {
+        if (expression != null) {
+            return expression.accept(this);
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -124,19 +140,24 @@ class ExprAstPrinter implements Expr.Visitor<String> {
     }
 }
 
-class StmtAstPrinter implements Stmt.Visitor<String> {
-    private final ExprAstPrinter astPrinter;
+class StmtPrinter extends AstPrinter implements Stmt.Visitor<String> {
+    private final ExprPrinter astPrinter;
     private final List<Stmt> statements;
 
-    StmtAstPrinter(List<Stmt> stmts) {
-        astPrinter = new ExprAstPrinter(this);
+    StmtPrinter(List<Stmt> stmts) {
+        astPrinter = new ExprPrinter(this);
         this.statements = stmts;
     }
 
-    String print() {
+    @Override
+    public String print() {
         StringBuilder builder = new StringBuilder();
         for (Stmt stmt : statements) {
-            builder.append(stmt.accept(this)).append("\n");
+            if (builder.toString().equals("")) {
+                builder.append(stmt.accept(this));
+            } else {
+                builder.append("\n").append(stmt.accept(this));
+            }
         }
         return builder.toString();
     }
