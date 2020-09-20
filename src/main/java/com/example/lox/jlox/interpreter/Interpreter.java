@@ -124,11 +124,13 @@ public final class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Voi
             case PLUS:
                 if (left instanceof Double && right instanceof Double) {
                     return (double) left + (double) right;
-                } else {
+                } else if (left instanceof String || right instanceof String) {
                     // Treat the operands as String value.
-                    left = !(left instanceof String) ? stringify(left) : left;
-                    right = !(right instanceof String) ? stringify(right) : right;
+                    left = left instanceof String ? left : stringify(left);
+                    right = right instanceof String ? right : stringify(right);
                     return left + "" + right;
+                } else {
+                    throw new RuntimeError(expr.operator(), "Expects two operands of type number or a string and another value.");
                 }
             case SLASH:
                 checkNumberOperands(expr.operator(), left, right);
