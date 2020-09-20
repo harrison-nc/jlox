@@ -26,6 +26,27 @@ public class BaseInterpreter implements Interpreter<Object> {
     }
 
     @Override
+    public Object interpret(List<Stmt> statements) {
+        return interpret(statements, null);
+    }
+
+    @Override
+    public Object interpret(List<Stmt> statements, Environment environment) {
+        if (null == environment) {
+            Object result = null;
+            try {
+                result = execute(statements);
+            } catch (RuntimeError error) {
+                Lox.runtimeError(error);
+            } catch (Break error) {
+                Lox.runtimeError(new RuntimeError(error.token(), "break is not allowed outside loop."));
+            }
+            return result;
+        }
+        return execute(statements, environment);
+    }
+
+    @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
         return expr.value();
     }
@@ -265,23 +286,15 @@ public class BaseInterpreter implements Interpreter<Object> {
         return stmt.accept(this);
     }
 
-    @Override
-    public Object execute(List<Stmt> statements) {
+    private Object execute(List<Stmt> statements) {
         Object result = null;
-        try {
-            for (Stmt statement : statements) {
-                result = execute(statement);
-            }
-        } catch (RuntimeError error) {
-            Lox.runtimeError(error);
-        } catch (Break error) {
-            Lox.runtimeError(new RuntimeError(error.token(), "break is not allowed outside loop."));
+        for (Stmt statement : statements) {
+            result = execute(statement);
         }
         return result;
     }
 
-    @Override
-    public Object execute(List<Stmt> statements, Environment environment) {
+    private Object execute(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
         Object result;
         try {

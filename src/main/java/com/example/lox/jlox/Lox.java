@@ -111,7 +111,7 @@ public class Lox {
             return null;
         }
 
-        return interpreter.execute(statements);
+        return interpreter.interpret(statements);
     }
 
     public static void error(int line, String message) {

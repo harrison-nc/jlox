@@ -24,7 +24,7 @@ final class NativeFn {
                     String source = "" + value;
                     var tokenList = Lox.scan(source);
                     var stmtList = Lox.parse(tokenList);
-                    result = baseInterpreter.execute(stmtList);
+                    result = baseInterpreter.interpret(stmtList);
                 } catch (RuntimeError err) {
                     error("[evaluation error] %s".formatted(err.getMessage()));
                 }

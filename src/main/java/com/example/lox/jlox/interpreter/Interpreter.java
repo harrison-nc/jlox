@@ -6,7 +6,7 @@ import com.example.lox.jlox.Stmt;
 import java.util.List;
 
 public interface Interpreter<T> extends Expr.Visitor<Object>, Stmt.Visitor<T> {
-    T execute(List<Stmt> statements);
+    T interpret(List<Stmt> statements);
 
-    T execute(List<Stmt> statements, Environment environment);
+    T interpret(List<Stmt> statements, Environment environment);
 }

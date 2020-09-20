@@ -106,14 +106,14 @@ public final class MainInterpreter implements Interpreter<Void> {
     }
 
     @Override
-    public Void execute(List<Stmt> statements) {
-        baseInterpreter.execute(statements);
+    public Void interpret(List<Stmt> statements) {
+        baseInterpreter.interpret(statements);
         return null;
     }
 
     @Override
-    public Void execute(List<Stmt> statements, Environment environment) {
-        baseInterpreter.execute(statements, environment);
+    public Void interpret(List<Stmt> statements, Environment environment) {
+        baseInterpreter.interpret(statements, environment);
         return null;
     }
 }
