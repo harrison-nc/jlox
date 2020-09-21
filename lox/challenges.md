@@ -3,3 +3,6 @@
 2. Make semicolon optional
 3. Add a reverse polish notation printer for lox
 4. Add support for the C-style conditional or “ternary” operator ?:
+5. Add support for bitwise operators: 
+   [here](https://craftinginterpreters.com/parsing-expressions.html)
+
