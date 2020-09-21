@@ -10,8 +10,7 @@ ast-gen: $(target)
 
 ast: $(target)
 	@java --module-path target/classes \
-	-m com.example.lox.jlox/com.example.lox.jlox.tool.AstPrinter \
-	sample.lx
+	-m com.example.lox.jlox/com.example.lox.jlox.AstPrinter
 
 $(target):
 	@make build
