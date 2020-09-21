@@ -2,10 +2,34 @@ package com.example.lox.jlox;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.lox.jlox.TokenType.*;
+import static java.util.Map.entry;
 
 class Scanner {
+    private static final Map<String, TokenType> keywords;
+
+    static {
+        keywords = Map.ofEntries(
+                entry("and", AND),
+                entry("class", CLASS),
+                entry("else", ELSE),
+                entry("false", FALSE),
+                entry("for", FOR),
+                entry("fun", FUN),
+                entry("if", IF),
+                entry("nil", NIL),
+                entry("or", OR),
+                entry("print", PRINT),
+                entry("return", RETURN),
+                entry("super", SUPER),
+                entry("this", THIS),
+                entry("true", TRUE),
+                entry("var", VAR),
+                entry("while", WHILE));
+    }
+
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
     private int start = 0;
@@ -71,8 +95,12 @@ class Scanner {
 
     private void identifier() {
         while (isAlphaNumeric(peek())) advance();
+        // See if the identifier is a reserved word.
+        String text = source.substring(start, current);
 
-        addToken(IDENTIFIER);
+        TokenType type = keywords.get(text);
+        if (type == null) type = IDENTIFIER;
+        addToken(type);
     }
 
     private void number() {
