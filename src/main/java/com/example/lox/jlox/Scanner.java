@@ -10,7 +10,7 @@ class Scanner {
     private final List<Token> tokens = new ArrayList<>();
     private int start = 0;
     private int current = 0;
-    private final int line = 1;
+    private int line = 1;
 
     Scanner(String source) {
         this.source = source;
@@ -52,6 +52,10 @@ class Scanner {
                     addToken(SLASH);
                 }
             }
+            case ' ', '\r', '\t' -> {
+                // Ignore whitespace.
+            }
+            case '\n' -> line++;
             default -> Lox.error(line, "Unexpected character.");
         }
     }
