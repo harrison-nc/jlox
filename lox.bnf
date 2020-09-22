@@ -3,11 +3,10 @@ program        ::= declaration* EOF ;
 declaration    ::= varDecl
                | statement ;
 
-varDecl        ::= "var" IDENTIFIER ( "=" expression )? ";" ;
-
 statement      ::= exprStmt
                | printStmt ;
 
+varDecl        ::= "var" IDENTIFIER ( "=" expression )? ";" ;
 exprStmt       ::= expression ";" ;
 printStmt      ::= "print" expression ";" ;
 
