@@ -8,3 +8,6 @@
 6. Extend the + operator to concatenate its operands if one of them
    is a string.
 7. Detect and report division by zero expressions
+8. Add support to the REPL to let users type in both statements and expressions.
+   If they enter a statement, execute it. If they enter an expression, evaluate it and display the result value.
+9. Make it a runtime error to access a variable that has not been initialized or assigned to
