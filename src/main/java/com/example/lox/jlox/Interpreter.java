@@ -16,34 +16,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitLiteralExpr(Expr.Literal expr) {
-        return expr.value;
-    }
+    public Object visitAssignExpr(Expr.Assign expr) {
+        Object value = evaluate(expr.value);
 
-    @Override
-    public Object visitUnaryExpr(Expr.Unary expr) {
-        Object right = evaluate(expr.right);
-
-        switch (expr.operator.type) {
-            case MINUS:
-                checkNumberOperand(expr.operator, right);
-                return -(double) right;
-            case BANG:
-                return !isTruthy(right);
-        }
-
-        // Unreachable.
-        return null;
-    }
-
-    @Override
-    public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
-    }
-
-    @Override
-    public Object visitGroupingExpr(Expr.Grouping expr) {
-        return evaluate(expr.expression);
+        environment.assign(expr.name, value);
+        return value;
     }
 
     @Override
@@ -94,11 +71,34 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitAssignExpr(Expr.Assign expr) {
-        Object value = evaluate(expr.value);
+    public Object visitGroupingExpr(Expr.Grouping expr) {
+        return evaluate(expr.expression);
+    }
 
-        environment.assign(expr.name, value);
-        return value;
+    @Override
+    public Object visitLiteralExpr(Expr.Literal expr) {
+        return expr.value;
+    }
+
+    @Override
+    public Object visitUnaryExpr(Expr.Unary expr) {
+        Object right = evaluate(expr.right);
+
+        switch (expr.operator.type) {
+            case MINUS:
+                checkNumberOperand(expr.operator, right);
+                return -(double) right;
+            case BANG:
+                return !isTruthy(right);
+        }
+
+        // Unreachable.
+        return null;
+    }
+
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr) {
+        return environment.get(expr.name);
     }
 
     private void checkNumberOperand(Token operator, Object operand) {
