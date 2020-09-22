@@ -9,11 +9,12 @@ function       ::= IDENTIFIER "(" parameters? ")" block ;
 parameters     ::= IDENTIFIER ( "," IDENTIFIER )* ;
 
 statement      ::= exprStmt
-               | forStmt
-               | ifStmt
-               | printStmt
-               | whileStmt
-               | block ;
+               |   forStmt
+               |   ifStmt
+               |   printStmt
+               |   returnStmt
+               |   whileStmt
+               |   block ;
 
 forStmt        ::= "for" "(" ( varDecl | exprStmt | ";" )
                       expression? ";"
@@ -21,6 +22,7 @@ forStmt        ::= "for" "(" ( varDecl | exprStmt | ";" )
 
 ifStmt         ::= "if" "(" expression ")" statement ( "else" statement )? ;
 whileStmt      ::= "while" "(" expression ")" statement ;
+returnStmt     ::= "return" expression? ";" ;
 block          ::= "{" declaration* "}" ;
 
 varDecl        ::= "var" IDENTIFIER ( "=" expression )? ";" ;
