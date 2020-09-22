@@ -12,3 +12,8 @@
    If they enter a statement, execute it. If they enter an expression, evaluate it and display the result value.
 9. Make it a runtime error to access a variable that has not been initialized or assigned to
 10. Add support for break statements: [link](https://craftinginterpreters.com/control-flow.html#challenges).
+11. Perform the check the prevents calling of functions fewer or
+    more argument at compile time instead of at runtime: 
+    [link](https://craftinginterpreters.com/functions.html#challenges).
+12. Add support for anonymous functions
+13. Add support for lambdas
