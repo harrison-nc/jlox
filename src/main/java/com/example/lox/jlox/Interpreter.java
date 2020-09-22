@@ -10,16 +10,20 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     Interpreter() {
         globals.define("clock", new LoxCallable() {
             @Override
-            public int arity() { return 0; }
+            public int arity() {
+                return 0;
+            }
 
             @Override
             public Object call(Interpreter interpreter,
                                List<Object> arguments) {
-                return (double)System.currentTimeMillis() / 1000.0;
+                return (double) System.currentTimeMillis() / 1000.0;
             }
 
             @Override
-            public String toString() { return "<native fn>"; }
+            public String toString() {
+                return "<native fn>";
+            }
         });
     }
 
@@ -106,7 +110,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         if (arguments.size() != function.arity()) {
             throw new RuntimeError(expr.paren,
                     "Expected %d arguments but got %s."
-                    .formatted(function.arity(), arguments.size()));
+                            .formatted(function.arity(), arguments.size()));
         }
 
         return function.call(this, arguments);
