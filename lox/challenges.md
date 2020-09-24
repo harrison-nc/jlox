@@ -17,3 +17,4 @@
     [link](https://craftinginterpreters.com/functions.html#challenges).
 12. Add support for anonymous functions
 13. Add support for lambdas (function literal)
+14. 14. Extend the resolver to report an error if a local variable is never used
