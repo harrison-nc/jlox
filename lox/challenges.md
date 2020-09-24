@@ -16,4 +16,4 @@
     more argument at compile time instead of at runtime: 
     [link](https://craftinginterpreters.com/functions.html#challenges).
 12. Add support for anonymous functions
-13. Add support for lambdas
+13. Add support for lambdas (function literal)
