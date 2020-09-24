@@ -1,0 +1,12 @@
+fun bad() {
+  // Reject variable declaration in local scopes
+  // when a variable with the same name already exists
+  // in the same scope.
+  var a = "first";
+  var a = "second";
+}
+// Accept variable declaration in the global scope
+// even if a variable with the same name already exists.
+// In this case the previous value is overridden
+var b = "first";
+var b = "second";
