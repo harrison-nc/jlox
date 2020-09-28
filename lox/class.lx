@@ -1,6 +1,6 @@
 class Breakfast {
   cook() {
-    print "Eggs a-fryin'!";
+    print "Eggs a-frying'!";
   }
 
   serve(who) {
