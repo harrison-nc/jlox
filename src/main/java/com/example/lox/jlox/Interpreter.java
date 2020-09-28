@@ -284,7 +284,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         environment.define(stmt.name.lexeme, null);
         var methods = new HashMap<String, LoxFunction>();
         for (Stmt.Function method : stmt.methods) {
-            var function = new LoxFunction(method, environment);
+            var function = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
             methods.put(method.name.lexeme, function);
         }
         var klass = new LoxClass(stmt.name.lexeme, methods);
