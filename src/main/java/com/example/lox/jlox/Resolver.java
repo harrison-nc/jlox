@@ -170,11 +170,6 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         expr.accept(this);
     }
 
-    private enum FunctionType {
-        NONE,
-        FUNCTION
-    }
-
     private void beginScope() {
         scopes.push(new HashMap<>());
     }
@@ -209,5 +204,10 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
 
         // Not found. Assume it is global.
+    }
+
+    private enum FunctionType {
+        NONE,
+        FUNCTION
     }
 }
