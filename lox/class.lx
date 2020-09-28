@@ -7,3 +7,13 @@ class Breakfast {
     print "Enjoy your breakfast, " + who + ".";
   }
 }
+
+print Breakfast;
+
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
