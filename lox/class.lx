@@ -21,3 +21,7 @@ print DevonshireCream; // Prints "DevonshireCream".
 class Bagel {}
 var bagel = Bagel();
 print bagel; // Prints "Bagel instance".
+
+var food = Breakfast();
+food.cook();
+food.serve("John");
