@@ -52,6 +52,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
             }
 
             resolve(stmt.superClass);
+
+            beginScope();
+            scopes.peek().put("super", true);
         }
 
         beginScope();
@@ -67,6 +70,8 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
         }
 
         endScope();
+
+        if (stmt.superClass != null) endScope();
 
         currentClass = enclosingClass;
         return null;
@@ -193,6 +198,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     public Void visitSetExpr(Expr.Set expr) {
         resolve(expr.object);
         resolve(expr.value);
+        return null;
+    }
+
+    @Override
+    public Void visitSuperExpr(Expr.Super expr) {
+        resolveLocal(expr, expr.keyword);
         return null;
     }
 
