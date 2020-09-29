@@ -42,6 +42,6 @@ multiplication ::= unary ( ( "/" | "*" ) unary )* ;
 unary          ::= ( "!" | "-" ) unary | call ;
 call           ::= primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 arguments      ::= expression ( "," expression )* ;
-primary        ::= NUMBER | STRING | "false" | "true" | "nil"
+primary        ::= NUMBER | STRING | "false" | "true" | "nil" | "this"
                |   "(" expression ")"
                |   IDENTIFIER ;
