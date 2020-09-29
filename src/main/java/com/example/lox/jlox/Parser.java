@@ -177,6 +177,14 @@ class Parser {
             return new Expr.Grouping(expr);
         }
 
+        if (match(SUPER)) {
+            Token keyword = previous();
+            consume(DOT, "Expect '.' after 'super'.");
+            consume(IDENTIFIER, "Expect super class method name.");
+            Token method = previous();
+            return new Expr.Super(keyword, method);
+        }
+
         if (match(THIS)) return new Expr.This(previous());
 
         if (match(IDENTIFIER)) {
