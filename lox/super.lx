@@ -1,0 +1,36 @@
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+class BostonCream < Doughnut {}
+
+// Calling method on a superclass
+BostonCream().cook();
+
+// Error: Super class must be a class
+// var NotAClass = "I am totally not a class";
+// class Subclass < NotAClass {} // ?!
+
+class BostonCream < Doughnut {
+
+  // Override super class method
+  cook() {
+    super.cook(); // Call super class method in overriding method
+    print "Pipe full of custard and coat with chocolate.";
+  }
+}
+
+BostonCream().cook();
+
+// Invalid uses of super
+
+class Eclair {
+  cook() {
+    super.cook();
+    print "Pipe full of crème pâtissière.";
+  }
+}
+
+super.notEvenInAClass();
