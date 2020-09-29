@@ -19,6 +19,10 @@ class LoxClass implements LoxCallable {
             return methods.get(name);
         }
 
+        if (superClass != null) {
+            return superClass.findMethod(name);
+        }
+
         return null;
     }
 
