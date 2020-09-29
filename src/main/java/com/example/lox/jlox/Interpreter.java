@@ -281,13 +281,21 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
+        Object superClass = null;
+        if (stmt.superClass != null) {
+            superClass = evaluate(stmt.superClass);
+            if (!(superClass instanceof LoxClass)) {
+                throw new RuntimeError(stmt.superClass.name, "Super class must be a class.");
+            }
+        }
+
         environment.define(stmt.name.lexeme, null);
         var methods = new HashMap<String, LoxFunction>();
         for (Stmt.Function method : stmt.methods) {
             var function = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
             methods.put(method.name.lexeme, function);
         }
-        var klass = new LoxClass(stmt.name.lexeme, methods);
+        var klass = new LoxClass(stmt.name.lexeme, (LoxClass) superClass, methods);
         environment.assign(stmt.name, klass);
         return null;
     }
