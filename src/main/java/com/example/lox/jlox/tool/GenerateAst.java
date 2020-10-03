@@ -45,70 +45,102 @@ public class GenerateAst {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
-        writer.println("package com.example.lox.jlox;");
-        writer.println();
-        writer.println("import java.util.List;");
-        writer.println();
-        writer.println("abstract class " + baseName + " {");
-
-        defineVisitor(writer, baseName, types);
+        var visitor = defineVisitor(baseName, types);
+        var factories = new StringBuilder();
+        var classes = new StringBuilder();
 
         // The AST classes.
         for (String type : types) {
             String className = type.split(":")[0].trim();
             String fields = type.split(":")[1].trim();
-            defineType(writer, baseName, className, fields);
+
+            var factory = defineFactory(className, fields);
+            if (factories.isEmpty()) {
+                factories.append(factory);
+            } else {
+                factories.append("\n").append(factory);
+            }
+
+            var clazz = defineType(baseName, className, fields);
+            if (classes.isEmpty()) {
+                classes.append(clazz);
+            } else {
+                classes.append("\n").append(clazz);
+            }
         }
 
-        // The base accept() method.
-        writer.println();
-        writer.println("  abstract <R> R accept(Visitor<R> visitor);");
+        var ast = """
+                package com.example.lox.jlox;
+                                
+                import java.util.List;
+                import com.example.lox.jlox.Token;
+                                
+                sealed interface %s {
+                    <R> R accept(Visitor<R> visitor);
+                    
+                %s
+                %s
+                %s
+                }"""
+                .formatted(baseName, factories.toString(), visitor, classes.toString());
 
-        writer.println("}");
+        writer.println(ast);
         writer.close();
     }
 
-    private static void defineVisitor(
-            PrintWriter writer, String baseName, List<String> types) {
-        writer.println("  interface Visitor<R> {");
-
-        for (String type : types) {
-            String typeName = type.split(":")[0].trim();
-            writer.println("    R visit" + typeName + baseName + "(" +
-                           typeName + " " + baseName.toLowerCase() + ");");
-        }
-
-        writer.println("  }");
+    private static String defineVisitor(String baseName, List<String> types) {
+        var visitMethods = visitMethods(baseName, types);
+        return "    sealed interface Visitor<R> {\n%s    }".formatted(visitMethods);
     }
 
-    private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
-        writer.println("  static class " + className + " extends " + baseName + " {");
+    private static String defineType(String baseName, String className, String fieldList) {
+        return """
+                    record %s (%s) implements %s {
+                        @Override
+                        public <R> R accept(Visitor<R> visitor) {
+                            return visitor.visit%s%s(this);
+                        }
+                    }
+                """
+                .formatted(className, fieldList, baseName, className, baseName);
+    }
 
-        // Constructor.
-        writer.println("    " + className + "(" + fieldList + ") {");
+    private static String defineFactory(String className, String fieldList) {
+        String parameters = params(fieldList);
+        return "    static %s of%s (%s) {\n        return new %s(%s);\n    }\n".formatted(className, className, fieldList, className, parameters);
+    }
 
-        // Store parameters in fields.
-        String[] fields = fieldList.split(", ");
-        for (String field : fields) {
-            String name = field.split(" ")[1];
-            writer.println("      this." + name + " = " + name + ";");
+    private static String params(String fieldList) {
+        StringBuilder builder = new StringBuilder();
+
+        String[] types = fieldList.split(",");
+
+        for (var type : types) {
+            String name = type.trim().split(" ")[1].trim();
+            if (builder.isEmpty()) {
+                builder.append(name);
+            } else {
+                builder.append(", ").append(name);
+            }
         }
 
-        writer.println("    }");
+        return builder.toString();
+    }
 
-        // Visitor pattern.
-        writer.println();
-        writer.println("    @Override");
-        writer.println("    <R> R accept(Visitor<R> visitor) {");
-        writer.println("      return visitor.visit" + className + baseName + "(this);");
-        writer.println("    }");
+    private static String visitMethods(String baseName, List<String> types) {
+        var visitMethods = new StringBuilder();
 
-        // Fields.
-        writer.println();
-        for (String field : fields) {
-            writer.println("    final " + field + ";");
+        for (var type : types) {
+            String typeName = type.split(":")[0].trim();
+            var method = "        R visit%s%s(%s %s);\n".formatted(typeName, baseName, typeName, baseName.toLowerCase());
+
+            if (visitMethods.isEmpty()) {
+                visitMethods.append(method);
+            } else {
+                visitMethods.append("\n").append(method);
+            }
         }
 
-        writer.println("  }");
+        return visitMethods.toString();
     }
 }

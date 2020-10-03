@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 class LoxClass implements LoxCallable {
-    final String name;
-    final LoxClass superClass;
+    private final String name;
+    private final LoxClass superClass;
     private final Map<String, LoxFunction> methods;
 
     public LoxClass(String name, LoxClass superClass, Map<String, LoxFunction> methods) {
         this.name = name;
         this.superClass = superClass;
-        this.methods = methods;
+        this.methods = Map.copyOf(methods);
     }
 
     LoxFunction findMethod(String name) {
@@ -19,8 +19,8 @@ class LoxClass implements LoxCallable {
             return methods.get(name);
         }
 
-        if (superClass != null) {
-            return superClass.findMethod(name);
+        if (superClass() != null) {
+            return superClass().findMethod(name);
         }
 
         return null;
@@ -49,6 +49,14 @@ class LoxClass implements LoxCallable {
 
     @Override
     public String toString() {
+        return name();
+    }
+
+    String name() {
         return name;
+    }
+
+    LoxClass superClass() {
+        return superClass;
     }
 }
