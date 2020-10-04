@@ -23,14 +23,3 @@ class BostonCream < Doughnut {
 }
 
 BostonCream().cook();
-
-// Invalid uses of super
-
-class Eclair {
-  cook() {
-    super.cook();
-    print "Pipe full of crème pâtissière.";
-  }
-}
-
-super.notEvenInAClass();
