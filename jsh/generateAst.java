@@ -1,4 +1,4 @@
-package com.example.lox.jlox.tool;
+///usr/bin/env jbang "$0" "$@" ; exit $?
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-public class GenerateAst {
+public class generateAst {
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
             System.err.println("Usage: generate_ast <output directory>");
@@ -71,17 +71,18 @@ public class GenerateAst {
 
         var ast = """
                 package com.example.lox.jlox;
-                                
+
                 import java.util.List;
                 import com.example.lox.jlox.Token;
-                                
+
                 sealed interface %s {
                     <R> R accept(Visitor<R> visitor);
-                    
+
                 %s
                 %s
                 %s
-                }"""
+                }\
+                """
                 .formatted(baseName, factories.toString(), visitor, classes.toString());
 
         writer.println(ast);
@@ -100,7 +101,7 @@ public class GenerateAst {
                         public <R> R accept(Visitor<R> visitor) {
                             return visitor.visit%s%s(this);
                         }
-                    }
+                    }\
                 """
                 .formatted(className, fieldList, baseName, className, baseName);
     }
