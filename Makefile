@@ -17,5 +17,5 @@ clean: pom.xml
 	@mvn clean
 
 ast: jsh/generateAst.java
-	@jsh/generateAst.java jsh/
+	@./jbang jsh/generateAst.java src/main/java/com/example/lox/jlox
 
